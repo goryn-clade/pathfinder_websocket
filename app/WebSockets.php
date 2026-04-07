@@ -69,7 +69,7 @@ class WebSockets {
         // global MessageComponent (main app) (handles all business logic) --------------------------------------------
         $mapUpdate = new Component\MapUpdate($webSocketLogStore);
 
-        $loop->addPeriodicTimer(3, function(EventLoop\TimerInterface $timer) use ($mapUpdate) {
+        $loop->addPeriodicTimer(3, function(EventLoop\TimerInterface $timer) use ($mapUpdate): void {
             $mapUpdate->housekeeping($timer);
         });
 
@@ -83,11 +83,11 @@ class WebSockets {
             ]
         ]);
 
-        $server->on('connection', function(Socket\ConnectionInterface $connection) use ($tcpSocket) {
+        $server->on('connection', function(Socket\ConnectionInterface $connection) use ($tcpSocket): void {
             $tcpSocket->onConnect($connection);
         });
 
-        $server->on('error', function(\Exception $e) use ($tcpSocket) {
+        $server->on('error', function(\Exception $e) use ($tcpSocket): void {
             $tcpSocket->log(['debug', 'error'], null, 'onError', $e->getMessage());
         });
 

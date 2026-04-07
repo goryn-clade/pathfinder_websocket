@@ -181,24 +181,24 @@ class TcpSocket extends AbstractSocket{
                 ->then($this->initDispatch($connection))
                 ->then($this->initResponse($connection))
                 ->then(
-                    function(array $payload) use ($connection) {
+                    function(array $payload) use ($connection): void {
                         $this->log(['debug', 'info'], $connection,'DONE', 'task "' . $payload['task'] . '" done → response send');
                     },
-                    function(\Exception $e) use ($connection) {
+                    function(\Exception $e) use ($connection): void {
                         $this->log(['debug', 'error'], $connection, 'ERROR', $e->getMessage());
                         $this->connectionError($connection, $e);
                     });
 
-            $connection->on('end', function() use ($connection) {
+            $connection->on('end', function() use ($connection): void {
                 $this->log('debug', $connection, 'onEnd');
             });
 
-            $connection->on('close', function() use ($connection) {
+            $connection->on('close', function() use ($connection): void {
                 $this->log(['debug'], $connection, 'onClose', 'close connection');
                 $this->removeConnection($connection);
             });
 
-            $connection->on('error', function(\Exception $e)  use ($connection) {
+            $connection->on('error', function(\Exception $e)  use ($connection): void {
                 $this->log(['debug', 'error'], $connection, 'onError', $e->getMessage());
             });
         }else{
@@ -222,7 +222,7 @@ class TcpSocket extends AbstractSocket{
                 $promise = Promise\Stream\first($streamDecoded);
 
                 // register on('data') for main input stream
-                $connection->on('data', function ($chunk) use ($stream) {
+                $connection->on('data', function ($chunk) use ($stream): void {
                     // send current data chunk to processing stream -> resolves promise
                     $stream->emit('data', [$chunk]);
                 });
@@ -414,7 +414,7 @@ class TcpSocket extends AbstractSocket{
             ($data = (array)$this->connections->offsetGet($connection)) &&
             isset($data['timers'])
         ){
-            foreach((array)$data['timers'] as $timerName => $timer){
+            foreach((array)$data['timers'] as $timer){
                 $this->loop->cancelTimer($timer);
             }
 
@@ -435,7 +435,7 @@ class TcpSocket extends AbstractSocket{
             ($data = (array)$this->connections->offsetGet($connection)) &&
             isset($data['timers'])
         ){
-            $data['timers'][$timerName] = $this->loop->addTimer($interval, function() use ($connection, $timerCallback) {
+            $data['timers'][$timerName] = $this->loop->addTimer($interval, function() use ($connection, $timerCallback): void {
                 $timerCallback($connection);
             });
 
@@ -452,7 +452,7 @@ class TcpSocket extends AbstractSocket{
      */
     protected function setTimerTimeout(Socket\ConnectionInterface $connection, float $waitTimeout = self::DEFAULT_WAIT_TIMEOUT){
         $this->cancelTimer($connection, 'disconnectTimer');
-        $this->setTimer($connection, 'disconnectTimer', $waitTimeout, function(Socket\ConnectionInterface $connection) use ($waitTimeout) {
+        $this->setTimer($connection, 'disconnectTimer', $waitTimeout, function(Socket\ConnectionInterface $connection) use ($waitTimeout): void {
             $errorMessage = sprintf(self::ERROR_WAIT_TIMEOUT, $waitTimeout);
 
             $this->connectionError(

@@ -19,7 +19,7 @@ if(PHP_SAPI === 'cli'){
     $cliOpts = getopt('', array_keys($longOpts));
 
     $options = [];
-    array_walk($longOpts, function($defaultVal, $optKey) use ($cliOpts, &$options) {
+    array_walk($longOpts, function($defaultVal, $optKey) use ($cliOpts, &$options): void {
         $key = trim($optKey, ':');
         $val = $defaultVal;
         if(array_key_exists($key, $cliOpts)){
@@ -33,7 +33,7 @@ if(PHP_SAPI === 'cli'){
      * @param array $longOpts
      * @param array $options
      */
-    $showHelp = function(array $longOpts, array $options){
+    $showHelp = function(array $longOpts, array $options): void{
         $optKeys = array_keys($longOpts);
         $colors = new Socket\Log\ShellColors();
         $data = [];
@@ -63,7 +63,7 @@ if(PHP_SAPI === 'cli'){
      * set error reporting based on debug option value
      * @param int $debug
      */
-    $setErrorReporting = function(int $debug){
+    $setErrorReporting = function(int $debug): void{
         switch($debug){
             case 0: error_reporting(0); break; // Turn off all error reporting
             case 1: error_reporting(E_ERROR); break; // Errors only
