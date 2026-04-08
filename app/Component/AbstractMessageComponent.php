@@ -189,7 +189,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param ConnectionInterface $conn
      * @param $data
      */
-    protected function send(ConnectionInterface $conn, $data){
+    protected function send(ConnectionInterface $conn, string $data){
         $conn->send($data);
         $this->updateConnection($conn);
     }
@@ -251,7 +251,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param string $action
      * @param string $message
      */
-    protected function log($logTypes, ?ConnectionInterface $connection, string $action, string $message = '') : void {
+    protected function log(array<string> $logTypes, ?ConnectionInterface $connection, string $action, string $message = '') : void {
         if($this->logStore){
             $remoteAddress = $connection ? $connection->remoteAddress : null;
             $resourceId = $connection ? $connection->resourceId : null;
