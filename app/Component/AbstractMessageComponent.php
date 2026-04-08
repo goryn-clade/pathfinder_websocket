@@ -222,7 +222,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param array|null $characterIds
      * @return Payload|null
      */
-    protected function newPayload(string $task, $load = null, ?array $characterIds = null) : ?Payload {
+    protected function newPayload(string $task, mixed $load = null, ?array<int, int> $characterIds = null) : ?Payload {
         $payload = null;
         try{
             $payload = new Payload($task, $load, $characterIds);

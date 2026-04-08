@@ -42,7 +42,7 @@ class Payload implements \JsonSerializable {
      * @param null $load
      * @param array|null $characterIds
      */
-    public function __construct(string $task, $load = null, ?array $characterIds = null){
+    public function __construct(string $task, mixed $load = null, ?array<int, int> $characterIds = null){
         $this->setTask($task);
         $this->setLoad($load);
         $this->setCharacterIds($characterIds);
@@ -69,7 +69,7 @@ class Payload implements \JsonSerializable {
     /**
      * @param array|null $characterIds
      */
-    public function setCharacterIds(?array $characterIds){
+    public function setCharacterIds(?array<int, int> $characterIds){
         if(is_array($characterIds)){
             $this->characterIds = $characterIds;
         }else{

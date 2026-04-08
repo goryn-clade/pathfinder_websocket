@@ -284,7 +284,7 @@ class MapUpdate extends AbstractMessageComponent {
      * @param ConnectionInterface $conn
      * @param $subscribeData
      */
-    private function subscribe(ConnectionInterface $conn, array $subscribeData) : void {
+    private function subscribe(ConnectionInterface $conn, array<string, mixed> $subscribeData) : void {
         $characterId = (int)$subscribeData['id'];
         $characterToken = (string)$subscribeData['token'];
 
@@ -661,7 +661,7 @@ class MapUpdate extends AbstractMessageComponent {
     /**
      * @param array $characterData
      */
-    private function setCharacterData(array $characterData) : void {
+    private function setCharacterData(array<string, mixed> $characterData) : void {
         if($characterId = (int)$characterData['id']){
             $this->characterData[$characterId] = $characterData;
         }
@@ -679,7 +679,7 @@ class MapUpdate extends AbstractMessageComponent {
      * @param array $characterIds
      * @return array
      */
-    private function getCharactersData(array $characterIds) : array {
+    private function getCharactersData(array<int, int> $characterIds) : array {
         return array_filter($this->characterData, function($characterId) use($characterIds) {
             return in_array($characterId, $characterIds);
         }, ARRAY_FILTER_USE_KEY);
@@ -688,7 +688,7 @@ class MapUpdate extends AbstractMessageComponent {
     /**
      * @param array $characterData
      */
-    private function updateCharacterData(array $characterData) : void {
+    private function updateCharacterData(array<string, mixed> $characterData) : void {
         $characterId = (int)$characterData['id'];
         if($this->getCharacterData($characterId)){
             $this->setCharacterData($characterData);
@@ -705,7 +705,7 @@ class MapUpdate extends AbstractMessageComponent {
     /**
      * @param array $mapIds
      */
-    private function broadcastMapSubscriptions(array $mapIds) : void {
+    private function broadcastMapSubscriptions(array<int|string, int> $mapIds) : void {
         $mapIds = array_unique($mapIds);
 
         foreach($mapIds as $mapId){
@@ -733,7 +733,7 @@ class MapUpdate extends AbstractMessageComponent {
      * @param array $mapData
      * @return int
      */
-    private function broadcastMapUpdate(string $task, array $mapData) : int {
+    private function broadcastMapUpdate(string $task, array<string, mixed> $mapData) : int {
         $mapId = (int)$mapData['config']['id'];
         $connectionCount =  $this->broadcastMapData($task, $mapId, $mapData);
 
@@ -766,7 +766,7 @@ class MapUpdate extends AbstractMessageComponent {
      * @param array $accessData
      * @return int count of connected characters
      */
-    private function setAccess(string $task, $accessData) : int {
+    private function setAccess(string $task, array<string, mixed> $accessData) : int {
         $newMapCharacterIds = [];
 
         if($mapId = (int)$accessData['id']){
@@ -927,7 +927,7 @@ class MapUpdate extends AbstractMessageComponent {
      * @param array $array2
      * @return bool
      */
-    protected function arraysEqualKeys(array $array1, array $array2) : bool {
+    protected function arraysEqualKeys(array<int|string, mixed> $array1, array<int|string, mixed> $array2) : bool {
         return !array_diff_key($array1, $array2) && !array_diff_key($array2, $array1);
     }
 
@@ -936,7 +936,7 @@ class MapUpdate extends AbstractMessageComponent {
      * @param array $meta
      * @param array $log
      */
-    private function handleLogData(array $meta, array $log){
+    private function handleLogData(array<string, mixed> $meta, array<string, mixed> $log){
         $logHandler = new LogFileHandler((string)$meta['stream']);
         $logHandler->write($log);
     }
