@@ -271,7 +271,7 @@ class TcpSocket extends AbstractSocket{
      * @param string $task
      * @param null $load
      */
-    protected function dispatch(Socket\ConnectionInterface $connection, Promise\Deferred $deferred, string $task, $load = null) : void {
+    protected function dispatch(Socket\ConnectionInterface $connection, Promise\Deferred $deferred, string $task, mixed $load = null) : void {
         $addStatusData = false;
 
         switch($task){
@@ -327,7 +327,7 @@ class TcpSocket extends AbstractSocket{
      * @param Socket\ConnectionInterface $connection
      * @param array $payload
      */
-    protected function write(Promise\Deferred $deferred, Socket\ConnectionInterface $connection, array $payload) : void {
+    protected function write(Promise\Deferred $deferred, Socket\ConnectionInterface $connection, array<string, mixed> $payload) : void {
         $write = false;
         if($connection->isWritable()){
             if('json' == $this->acceptType){

@@ -41,7 +41,7 @@ class LogFileHandler {
      * write log data into to file
      * @param array $log
      */
-    public function write(array $log){
+    public function write(array<string, mixed> $log){
         $log = (string)json_encode($log, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         if( !empty($log) ){
             if($stream = fopen($this->stream, 'a')){
