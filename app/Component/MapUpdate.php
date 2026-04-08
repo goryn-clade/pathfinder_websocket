@@ -815,7 +815,7 @@ class MapUpdate extends AbstractMessageComponent {
      * @param $connectionAccessData
      * @return bool
      */
-    private function setConnectionAccess($connectionAccessData){
+    private function setConnectionAccess(array<string, mixed> $connectionAccessData){
         $response = false;
         $characterId = (int)$connectionAccessData['id'];
         $characterData = $connectionAccessData['characterData'];

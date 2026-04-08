@@ -81,7 +81,7 @@ class Payload implements \JsonSerializable {
      * @param $name
      * @return mixed
      */
-    public function __get($name){
+    public function __get(string $name){
         return $this->$name;
     }
 
