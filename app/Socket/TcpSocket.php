@@ -327,7 +327,7 @@ class TcpSocket extends AbstractSocket{
      * @param Socket\ConnectionInterface $connection
      * @param array $payload
      */
-    protected function write(Promise\Deferred $deferred, Socket\ConnectionInterface $connection, array<string, mixed> $payload) : void {
+    protected function write(Promise\Deferred $deferred, Socket\ConnectionInterface $connection, array $payload) : void {
         $write = false;
         if($connection->isWritable()){
             if('json' == $this->acceptType){

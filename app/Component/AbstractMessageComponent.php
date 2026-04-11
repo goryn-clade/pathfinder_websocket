@@ -178,7 +178,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
     protected function getConnectionData(ConnectionInterface $conn) : array {
         $meta = [];
         if($this->hasConnection($conn)){
-            $meta = (array)$this->connections[$conn->resourceId]['data'];
+            $meta = (array)($this->connections[$conn->resourceId]['data'] ?? []);
         }
         return $meta;
     }
@@ -222,7 +222,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param array|null $characterIds
      * @return Payload|null
      */
-    protected function newPayload(string $task, mixed $load = null, ?array<int, int> $characterIds = null) : ?Payload {
+    protected function newPayload(string $task, mixed $load = null, ?array $characterIds = null) : ?Payload {
         $payload = null;
         try{
             $payload = new Payload($task, $load, $characterIds);
@@ -251,7 +251,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param string $action
      * @param string $message
      */
-    protected function log(array<string> $logTypes, ?ConnectionInterface $connection, string $action, string $message = '') : void {
+    protected function log(array $logTypes, ?ConnectionInterface $connection, string $action, string $message = '') : void {
         if($this->logStore){
             $remoteAddress = $connection ? $connection->remoteAddress : null;
             $resourceId = $connection ? $connection->resourceId : null;

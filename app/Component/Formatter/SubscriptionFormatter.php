@@ -16,7 +16,7 @@ class SubscriptionFormatter{
      * @param array $charactersData
      * @return array
      */
-    static function groupCharactersDataBySystem(array<int|string, mixed> $charactersData) : array {
+    static function groupCharactersDataBySystem(array $charactersData) : array {
         $data = [];
         foreach($charactersData as $characterData){
             // check if characterData has an active log (active system for character)

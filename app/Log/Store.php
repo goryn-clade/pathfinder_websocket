@@ -121,7 +121,7 @@ class Store {
      * @param string $action
      * @param string $message
      */
-    public function log(array<string> $logTypes, ?string $remoteAddress, ?int $resourceId, string $action, string $message = '') : void {
+    public function log(array $logTypes, ?string $remoteAddress, ?int $resourceId, string $action, string $message = '') : void {
         if(!$this->isLocked()){
             // filter out logTypes that should not be logged
             $logTypes = array_filter((array)$logTypes, function(string $type) : bool {
