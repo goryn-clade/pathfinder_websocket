@@ -167,7 +167,7 @@ class TcpSocket extends AbstractSocket{
      * @param Socket\ConnectionInterface $connection
      */
     public function onConnect(Socket\ConnectionInterface $connection){
-        $this->log('debug', $connection, __FUNCTION__, 'open connection…');
+        $this->log(['debug'], $connection, __FUNCTION__, 'open connection…');
 
         if($this->isValidConnection($connection)){
             // connection can be used
@@ -190,7 +190,7 @@ class TcpSocket extends AbstractSocket{
                     });
 
             $connection->on('end', function() use ($connection): void {
-                $this->log('debug', $connection, 'onEnd');
+                $this->log(['debug'], $connection, 'onEnd');
             });
 
             $connection->on('close', function() use ($connection): void {
@@ -313,7 +313,7 @@ class TcpSocket extends AbstractSocket{
      */
     protected function initResponse(Socket\ConnectionInterface $connection) : callable {
         return function(array $payload) use ($connection) : Promise\PromiseInterface {
-            $this->log('debug', $connection, 'initResponse', 'task "' . $payload['task'] . '" → init response');
+            $this->log(['debug'], $connection, 'initResponse', 'task "' . $payload['task'] . '" → init response');
 
             $deferred = new Promise\Deferred();
             $this->write($deferred, $connection, $payload);
