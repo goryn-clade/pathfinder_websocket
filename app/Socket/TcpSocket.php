@@ -94,24 +94,6 @@ class TcpSocket extends AbstractSocket{
     const JSON_DECODE_MAX_LENGTH    = 65536 * 6;
 
     /**
-     * @see TcpSocket::DEFAULT_ACCEPT_TYPE
-     * @var string
-     */
-    private $acceptType             = self::DEFAULT_ACCEPT_TYPE;
-
-    /**
-     * @see TcpSocket::DEFAULT_WAIT_TIMEOUT
-     * @var float
-     */
-    private $waitTimeout            = self::DEFAULT_WAIT_TIMEOUT;
-
-    /**
-     * @see TcpSocket::DEFAULT_END_WITH_RESPONSE
-     * @var bool
-     */
-    private $endWithResponse        = self::DEFAULT_END_WITH_RESPONSE;
-
-    /**
      * @see TcpSocket::DEFAULT_STATS
      * @var bool
      */
@@ -150,15 +132,20 @@ class TcpSocket extends AbstractSocket{
         EventLoop\LoopInterface $loop,
         MessageComponentInterface $handler,
         Store $store,
-        string $acceptType          = self::DEFAULT_ACCEPT_TYPE,
-        float $waitTimeout          = self::DEFAULT_WAIT_TIMEOUT,
-        bool $endWithResponse       = self::DEFAULT_END_WITH_RESPONSE
+        /**
+         * @see TcpSocket::DEFAULT_ACCEPT_TYPE
+         */
+        private readonly string $acceptType          = self::DEFAULT_ACCEPT_TYPE,
+        /**
+         * @see TcpSocket::DEFAULT_WAIT_TIMEOUT
+         */
+        private readonly float $waitTimeout          = self::DEFAULT_WAIT_TIMEOUT,
+        /**
+         * @see TcpSocket::DEFAULT_END_WITH_RESPONSE
+         */
+        private readonly bool $endWithResponse       = self::DEFAULT_END_WITH_RESPONSE
     ){
         parent::__construct($loop, $handler, $store);
-
-        $this->acceptType           = $acceptType;
-        $this->waitTimeout          = $waitTimeout;
-        $this->endWithResponse      = $endWithResponse;
         $this->connections          = new \SplObjectStorage();
         $this->startupTime          = time();
     }

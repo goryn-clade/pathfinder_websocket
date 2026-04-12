@@ -22,12 +22,6 @@ class Store {
     const DEFAULT_LOG_STORE_SIZE    = 50;
 
     /**
-     * @see Store::DEFAULT_NAME
-     * @var string
-     */
-    private $name                   = self::DEFAULT_NAME;
-
-    /**
      * log store for log entries
      * -> store size should be limited for memory reasons
      * @var array
@@ -60,8 +54,13 @@ class Store {
      * Store constructor.
      * @param string $name
      */
-    public function __construct(string $name){
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @see Store::DEFAULT_NAME
+         */
+        private readonly string $name
+    )
+    {
     }
 
     /**
@@ -124,9 +123,7 @@ class Store {
     public function log(array $logTypes, ?string $remoteAddress, ?int $resourceId, string $action, string $message = '') : void {
         if(!$this->isLocked()){
             // filter out logTypes that should not be logged
-            $logTypes = array_filter((array)$logTypes, function(string $type) : bool {
-                return array_key_exists($type, $this->logTypes) && $this->logTypes[$type];
-            });
+            $logTypes = array_filter((array)$logTypes, fn(string $type): bool => array_key_exists($type, $this->logTypes) && $this->logTypes[$type]);
 
             if($logTypes){
                 // get log entry data
@@ -163,7 +160,7 @@ class Store {
             $caller = $backtrace[$traceIndex - 2];
             $callerOrig = $backtrace[$traceIndex - 1];
 
-            $file = substr($caller['file'], strlen(dirname(dirname(dirname($caller['file'])))) + 1);
+            $file = substr($caller['file'], strlen(dirname($caller['file'], 3)) + 1);
             $lineNum = $caller['line'];
             $function = $callerOrig['function'];
         }

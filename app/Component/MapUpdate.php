@@ -680,9 +680,7 @@ class MapUpdate extends AbstractMessageComponent {
      * @return array
      */
     private function getCharactersData(array $characterIds) : array {
-        return array_filter($this->characterData, function($characterId) use($characterIds) {
-            return in_array($characterId, $characterIds);
-        }, ARRAY_FILTER_USE_KEY);
+        return array_filter($this->characterData, fn($characterId) => in_array($characterId, $characterIds), ARRAY_FILTER_USE_KEY);
     }
 
     /**
@@ -879,7 +877,7 @@ class MapUpdate extends AbstractMessageComponent {
 
                 $characterStats = [
                     'characterId'   => $characterId,
-                    'characterName' => isset($characterData['name']) ? $characterData['name'] : null,
+                    'characterName' => $characterData['name'] ?? null,
                     'countCon'      => $connections->count(),
                     'connections'   => []
                 ];

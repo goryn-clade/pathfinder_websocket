@@ -207,7 +207,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      */
     protected function getPayloadFromMessage($msg) : ?Payload {
         $payload = null;
-        $msg = (array)json_decode($msg, true);
+        $msg = (array)json_decode((string) $msg, true);
 
         if(isset($msg['task'], $msg['load'])){
             $payload = $this->newPayload((string)$msg['task'], $msg['load']);

@@ -14,12 +14,6 @@ class LogFileHandler {
     const ERROR_DIR_CREATE              = 'There is no existing directory at "%s" and its not buildable.';
 
     /**
-     * steam uri
-     * @var string
-     */
-    private $stream                     = '';
-
-    /**
      * stream dir
      * @var string
      */
@@ -31,8 +25,10 @@ class LogFileHandler {
      */
     private $dirCreated = false;
 
-    public function __construct(string $stream){
-        $this->stream = $stream;
+    public function __construct(/**
+     * steam uri
+     */
+    private readonly string $stream){
         $this->dir = dirname($this->stream);
         $this->createDir();
     }
