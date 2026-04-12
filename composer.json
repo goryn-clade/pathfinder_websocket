@@ -15,7 +15,7 @@
     }
   },
   "require": {
-    "php-64bit": ">=7.1",
+    "php-64bit": ">=8.2",
     "ext-json": "*",
     "cboden/ratchet": "0.4.x",
     "react/promise-stream": "1.2.*",
