@@ -67,7 +67,7 @@ if(PHP_SAPI === 'cli'){
         switch($debug){
             case 0: error_reporting(0); break; // Turn off all error reporting
             case 1: error_reporting(E_ERROR); break; // Errors only
-            case 2: error_reporting(E_ALL & ~E_NOTICE); break; // Report all errors except E_NOTICE
+            case 2: error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED); break; // Report all errors except E_NOTICE and E_DEPRECATED
             default: error_reporting(E_ALL);
         }
     };
