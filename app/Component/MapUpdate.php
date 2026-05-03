@@ -521,31 +521,29 @@ class MapUpdate extends AbstractMessageComponent {
      * @return array
      */
     private function checkCharacterAccess(int $characterId, string $characterToken) : array {
+        if(empty($this->characterAccessData[$characterId])) {
+            return [];
+        }
+        $parts = explode('.', $characterToken, 2);
+        if(count($parts) !== 2) {
+            return [];
+        }
+        [$clientNonce, $clientHmac] = $parts;
+        $secret = (string)getenv('WS_TOKEN_SECRET');
+
         $characterData = [];
-        if( !empty($characterAccessData = (array)$this->characterAccessData[$characterId]) ){
-            // check expire for $this->characterAccessData -> check ALL characters and remove expired
-            foreach($characterAccessData as $i => $data){
-                $deleteToken = false;
-
-                if( ((int)$data['expire'] - time()) > 0 ){
-                    // still valid -> check token
-                    if($characterToken === $data['token']){
-                        $characterData = $data['characterData'];
-                        $deleteToken = true;
-                        // NO break; here -> check other characterAccessData as well
-                    }
-                }else{
-                    // token expired
-                    $deleteToken = true;
-                }
-
-                if($deleteToken){
-                    unset($this->characterAccessData[$characterId][$i]);
-                    // -> check if tokens for this charId is empty
-                    if( empty($this->characterAccessData[$characterId]) ){
-                        unset($this->characterAccessData[$characterId]);
-
-                    }
+        foreach((array)$this->characterAccessData[$characterId] as $i => $data){
+            $expired = ((int)$data['expire'] - time()) <= 0;
+            $expectedHmac = hash_hmac('sha256', $clientNonce . ':' . $characterId . ':' . $data['sessionId'], $secret);
+            // NO break after match — check all entries to purge any other expired tokens
+            $valid = !$expired && $clientNonce === $data['nonce'] && hash_equals($expectedHmac, $clientHmac);
+            if($valid){
+                $characterData = $data['characterData'];
+            }
+            if($expired || $valid){
+                unset($this->characterAccessData[$characterId][$i]);
+                if(empty($this->characterAccessData[$characterId])){
+                    unset($this->characterAccessData[$characterId]);
                 }
             }
         }
@@ -561,36 +559,39 @@ class MapUpdate extends AbstractMessageComponent {
      * @return bool
      */
     private function checkMapAccess(int $characterId, int $mapId, string $mapToken) : bool {
-        $access = false;
-        if( !empty($mapAccessData = (array)$this->mapAccessData[$mapId][$characterId]) ){
-            foreach($mapAccessData as $i => $data){
-                $deleteToken = false;
-                // check expire for $this->mapAccessData -> check ALL characters and remove expired
-                if( ((int)$data['expire'] - time()) > 0 ){
-                    // still valid -> check token
-                    if($mapToken === $data['token']){
-                        $access = true;
-                        $deleteToken = true;
-                    }
-                }else{
-                    // token expired
-                    $deleteToken = true;
-                }
+        if(empty($this->mapAccessData[$mapId][$characterId])) {
+            return false;
+        }
+        $parts = explode('.', $mapToken, 2);
+        if(count($parts) !== 2) {
+            return false;
+        }
+        [$clientNonce, $clientHmac] = $parts;
+        $secret = (string)getenv('WS_TOKEN_SECRET');
 
-                if($deleteToken){
-                    unset($this->mapAccessData[$mapId][$characterId][$i]);
-                    // -> check if tokens for this charId is empty
-                    if( empty($this->mapAccessData[$mapId][$characterId]) ){
-                        unset($this->mapAccessData[$mapId][$characterId]);
-                        // -> check if map has no access tokens left for characters
-                        if( empty($this->mapAccessData[$mapId]) ){
-                            unset($this->mapAccessData[$mapId]);
-                        }
-                    }
-                }
+        $access = false;
+        foreach((array)$this->mapAccessData[$mapId][$characterId] as $i => $data){
+            $expired = ((int)$data['expire'] - time()) <= 0;
+            $expectedHmac = hash_hmac('sha256', $clientNonce . ':' . $characterId . ':' . $data['sessionId'], $secret);
+            $valid = !$expired && $clientNonce === $data['nonce'] && hash_equals($expectedHmac, $clientHmac);
+            if($valid){
+                $access = true;
+            }
+            if($expired || $valid){
+                $this->removeMapAccessEntry($mapId, $characterId, $i);
             }
         }
         return $access;
+    }
+
+    private function removeMapAccessEntry(int $mapId, int $characterId, int $index) : void {
+        unset($this->mapAccessData[$mapId][$characterId][$index]);
+        if(empty($this->mapAccessData[$mapId][$characterId])){
+            unset($this->mapAccessData[$mapId][$characterId]);
+            if(empty($this->mapAccessData[$mapId])){
+                unset($this->mapAccessData[$mapId]);
+            }
+        }
     }
 
     /**
@@ -817,20 +818,18 @@ class MapUpdate extends AbstractMessageComponent {
         $response = false;
         $characterId = (int)$connectionAccessData['id'];
         $characterData = $connectionAccessData['characterData'];
-        $characterToken = $connectionAccessData['token'];
+        $characterToken = (string)$connectionAccessData['token'];
+        $sessionId = (string)($connectionAccessData['sessionId'] ?? '');
 
-        if(
-            $characterId &&
-            $characterData &&
-            $characterToken
-        ){
-            // expire time for character and map tokens
+        if($characterId && $characterData && $characterToken){
             $expireTime = time() + $this->mapAccessExpireSeconds;
+            // store the nonce (first segment of nonce.hmac) and session ID for HMAC verification on subscribe
+            $nonce = explode('.', $characterToken, 2)[0];
 
-            // tokens for character access
             $this->characterAccessData[$characterId][] = [
-                'token' => $characterToken,
-                'expire' => $expireTime,
+                'nonce'         => $nonce,
+                'sessionId'     => $sessionId,
+                'expire'        => $expireTime,
                 'characterData' => $characterData
             ];
 
@@ -838,8 +837,9 @@ class MapUpdate extends AbstractMessageComponent {
                 $mapId = (int)$mapData['id'];
 
                 $this->mapAccessData[$mapId][$characterId][] = [
-                    'token' => $mapData['token'],
-                    'expire' => $expireTime
+                    'nonce'     => $nonce,
+                    'sessionId' => $sessionId,
+                    'expire'    => $expireTime
                 ];
             }
 
