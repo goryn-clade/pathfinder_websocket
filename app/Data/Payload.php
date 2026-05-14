@@ -32,7 +32,7 @@ class Payload implements \JsonSerializable {
     /**
      * optional characterId array -> recipients
      * -> e.g if multiple browser tabs are open
-     * @var null|array
+     * @var null|array<string, mixed>
      */
     private $characterIds;
 
@@ -40,7 +40,7 @@ class Payload implements \JsonSerializable {
      * Payload constructor.
      * @param string $task
      * @param null $load
-     * @param array|null $characterIds
+     * @param array<string, mixed>|null $characterIds
      */
     public function __construct(string $task, mixed $load = null, ?array $characterIds = null){
         $this->setTask($task);
@@ -51,7 +51,7 @@ class Payload implements \JsonSerializable {
     /**
      * @param string $task
      */
-    public function setTask(string $task){
+    public function setTask(string $task): void{
         if($task){
             $this->task = $task;
         }else{
@@ -62,14 +62,14 @@ class Payload implements \JsonSerializable {
     /**
      * @param null $load
      */
-    public function setLoad($load = null){
+    public function setLoad($load = null): void{
         $this->load = $load;
     }
 
     /**
-     * @param array|null $characterIds
+     * @param array<string, mixed>|null $characterIds
      */
-    public function setCharacterIds(?array $characterIds){
+    public function setCharacterIds(?array $characterIds): void{
         if(is_array($characterIds)){
             $this->characterIds = $characterIds;
         }else{

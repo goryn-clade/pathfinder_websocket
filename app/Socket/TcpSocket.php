@@ -153,7 +153,7 @@ class TcpSocket extends AbstractSocket{
     /**
      * @param Socket\ConnectionInterface $connection
      */
-    public function onConnect(Socket\ConnectionInterface $connection){
+    public function onConnect(Socket\ConnectionInterface $connection): void{
         $this->log(['debug'], $connection, __FUNCTION__, 'open connection…');
 
         if($this->isValidConnection($connection)){
@@ -312,7 +312,7 @@ class TcpSocket extends AbstractSocket{
     /**
      * @param Promise\Deferred $deferred
      * @param Socket\ConnectionInterface $connection
-     * @param array $payload
+     * @param array<string, mixed> $payload
      */
     protected function write(Promise\Deferred $deferred, Socket\ConnectionInterface $connection, array $payload) : void {
         $write = false;
@@ -486,7 +486,7 @@ class TcpSocket extends AbstractSocket{
      * @param string $task
      * @param null $load
      * @param bool $addStats
-     * @return array
+     * @return array<string, string|mixed[]|null>
      */
     protected function newPayload(string $task, $load = null, bool $addStats = false) : array {
         $payload = [
@@ -514,7 +514,7 @@ class TcpSocket extends AbstractSocket{
     /**
      * get socket server statistics
      * -> e.g. connected clients count
-     * @return array
+     * @return array<string, mixed>
      */
     protected function getStats() : array {
         return [
@@ -525,7 +525,7 @@ class TcpSocket extends AbstractSocket{
 
     /**
      * get TcpSocket stats data
-     * @return array
+     * @return array<string, int|mixed[]>
      */
     protected function getSocketStats() : array {
         return [

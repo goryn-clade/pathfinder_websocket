@@ -56,6 +56,7 @@ abstract class AbstractSocket {
      * @param Socket\ConnectionInterface|null $connection
      * @param string $action
      * @param string $message
+     * @param string[] $logTypes
      */
     public function log(array $logTypes, ?Socket\ConnectionInterface $connection, string $action, string $message = '') : void {
         if(!$this->logStore->isLocked()){

@@ -24,14 +24,14 @@ class Store {
     /**
      * log store for log entries
      * -> store size should be limited for memory reasons
-     * @var array
+     * @var array<string, mixed>
      */
     private $store                  = [];
 
     /**
      * all valid types for custom log events
      * if value is false, logs for this type are ignored
-     * @var array
+     * @var array<string, mixed>
      */
     protected $logTypes             = [
         'error'     =>  true,
@@ -65,7 +65,7 @@ class Store {
 
     /**
      * get all stored log entries
-     * @return array
+     * @return array<string, mixed>
      */
     public function getStore() : array {
         return $this->store;
@@ -74,7 +74,7 @@ class Store {
     /**
      * @param bool $locked
      */
-    public function setLocked(bool $locked){
+    public function setLocked(bool $locked): void{
         $this->locked = $locked;
     }
 
@@ -88,7 +88,7 @@ class Store {
     /**
      * @param int $logLevel
      */
-    public function setLogLevel(int $logLevel){
+    public function setLogLevel(int $logLevel): void{
         switch($logLevel){
             case 3:
                 $this->logTypes['error'] = true;
@@ -119,6 +119,7 @@ class Store {
      * @param int|null $resourceId
      * @param string $action
      * @param string $message
+     * @param array<string, mixed> $logTypes
      */
     public function log(array $logTypes, ?string $remoteAddress, ?int $resourceId, string $action, string $message = '') : void {
         if(!$this->isLocked()){
@@ -142,12 +143,12 @@ class Store {
 
     /**
      * get log data as array for a custom log entry
-     * @param array $logTypes
+     * @param array<string, mixed> $logTypes
      * @param string|null $remoteAddress
      * @param int|null $resourceId
      * @param string $action
      * @param string $message
-     * @return array
+     * @return array<string, mixed>
      */
     private function getLogData(array $logTypes, ?string $remoteAddress, ?int $resourceId, string $action, string $message = '') : array {
         $file = null;
@@ -186,7 +187,7 @@ class Store {
 
     /**
      * echo log data to stdout -> terminal
-     * @param array $logData
+     * @param array<string, mixed> $logData
      */
     private function echoLog(array $logData) : void {
         if(!self::$colors){

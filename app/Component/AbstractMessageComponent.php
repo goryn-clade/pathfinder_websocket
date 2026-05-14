@@ -43,7 +43,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      *          'data' => null
      *      ]
      * ]
-     * @var array
+     * @var array<string, mixed>
      */
     private $connections;
 
@@ -173,7 +173,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
     /**
      * get meta data from $conn
      * @param ConnectionInterface $conn
-     * @return array
+     * @return array<string, mixed>
      */
     protected function getConnectionData(ConnectionInterface $conn) : array {
         $meta = [];
@@ -219,7 +219,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
     /**
      * @param string $task
      * @param null $load
-     * @param array|null $characterIds
+     * @param array<string, mixed>|null $characterIds
      * @return Payload|null
      */
     protected function newPayload(string $task, mixed $load = null, ?array $characterIds = null) : ?Payload {
@@ -235,7 +235,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
 
     /**
      * get WebSocket stats data
-     * @return array
+     * @return array<string, mixed>
      */
     public function getSocketStats() : array {
         return [
@@ -250,6 +250,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param ConnectionInterface|null $connection
      * @param string $action
      * @param string $message
+     * @param array<string, mixed> $logTypes
      */
     protected function log(array $logTypes, ?ConnectionInterface $connection, string $action, string $message = '') : void {
         if($this->logStore){

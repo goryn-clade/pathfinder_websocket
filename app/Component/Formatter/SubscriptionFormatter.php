@@ -13,8 +13,8 @@ class SubscriptionFormatter{
 
     /**
      * group charactersData by systemId based on their current 'log' data
-     * @param array $charactersData
-     * @return array
+     * @param array<string, mixed> $charactersData
+     * @return array<string, mixed>
      */
     static function groupCharactersDataBySystem(array $charactersData) : array {
         $data = [];

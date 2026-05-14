@@ -35,7 +35,7 @@ class LogFileHandler {
 
     /**
      * write log data into to file
-     * @param array $log
+     * @param array<string, mixed> $log
      */
     public function write(array $log){
         $log = (string)json_encode($log, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
