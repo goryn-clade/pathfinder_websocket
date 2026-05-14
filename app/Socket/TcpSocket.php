@@ -346,7 +346,7 @@ class TcpSocket extends AbstractSocket{
      * @param Socket\ConnectionInterface $connection
      * @param \Exception $e
      */
-    protected function connectionError(Socket\ConnectionInterface $connection, \Exception $e){
+    protected function connectionError(Socket\ConnectionInterface $connection, \Exception $e): void {
         $errorMessage = $e->getMessage();
         $this->log(['debug', 'error'], $connection, __FUNCTION__, $errorMessage);
 
@@ -377,7 +377,7 @@ class TcpSocket extends AbstractSocket{
      * @param Socket\ConnectionInterface $connection
      * @param string $timerName
      */
-    protected function cancelTimer(Socket\ConnectionInterface $connection, string $timerName){
+    protected function cancelTimer(Socket\ConnectionInterface $connection, string $timerName): void {
         if(
             $this->hasConnection($connection) &&
             ($data = (array)$this->connections->offsetGet($connection)) &&
@@ -395,7 +395,7 @@ class TcpSocket extends AbstractSocket{
      * cancels all previously set timers for a $connection
      * @param Socket\ConnectionInterface $connection
      */
-    protected function cancelTimers(Socket\ConnectionInterface $connection){
+    protected function cancelTimers(Socket\ConnectionInterface $connection): void {
         if(
             $this->hasConnection($connection) &&
             ($data = (array)$this->connections->offsetGet($connection)) &&
@@ -416,7 +416,7 @@ class TcpSocket extends AbstractSocket{
      * @param float $interval
      * @param callable $timerCallback
      */
-    protected function setTimer(Socket\ConnectionInterface $connection, string $timerName, float $interval, callable $timerCallback){
+    protected function setTimer(Socket\ConnectionInterface $connection, string $timerName, float $interval, callable $timerCallback): void {
         if(
             $this->hasConnection($connection) &&
             ($data = (array)$this->connections->offsetGet($connection)) &&
@@ -437,7 +437,7 @@ class TcpSocket extends AbstractSocket{
      * @param Socket\ConnectionInterface $connection
      * @param float $waitTimeout
      */
-    protected function setTimerTimeout(Socket\ConnectionInterface $connection, float $waitTimeout = self::DEFAULT_WAIT_TIMEOUT){
+    protected function setTimerTimeout(Socket\ConnectionInterface $connection, float $waitTimeout = self::DEFAULT_WAIT_TIMEOUT): void {
         $this->cancelTimer($connection, 'disconnectTimer');
         $this->setTimer($connection, 'disconnectTimer', $waitTimeout, function(Socket\ConnectionInterface $connection) use ($waitTimeout): void {
             $errorMessage = sprintf(self::ERROR_WAIT_TIMEOUT, $waitTimeout);
@@ -453,7 +453,7 @@ class TcpSocket extends AbstractSocket{
      * add new connection to global pool
      * @param Socket\ConnectionInterface $connection
      */
-    protected function addConnection(Socket\ConnectionInterface $connection){
+    protected function addConnection(Socket\ConnectionInterface $connection): void {
         if(!$this->hasConnection($connection)){
             $this->connections->attach($connection, [
                 'remoteAddress' => $connection->getRemoteAddress(),
@@ -473,7 +473,7 @@ class TcpSocket extends AbstractSocket{
      * remove $connection from global connection pool
      * @param Socket\ConnectionInterface $connection
      */
-    protected function removeConnection(Socket\ConnectionInterface $connection){
+    protected function removeConnection(Socket\ConnectionInterface $connection): void {
         if($this->hasConnection($connection)){
             $this->log(['debug'], $connection, __FUNCTION__, 'remove connection');
             $this->cancelTimers($connection);

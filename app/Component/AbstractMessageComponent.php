@@ -70,7 +70,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * new client connection onOpen
      * @param ConnectionInterface $conn
      */
-    public function onOpen(ConnectionInterface $conn){
+    public function onOpen(ConnectionInterface $conn): void {
         $this->log(['debug'], $conn, __FUNCTION__, 'open connection');
 
         $this->addConnection($conn);
@@ -80,7 +80,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * client connection onClose
      * @param ConnectionInterface $conn
      */
-    public function onClose(ConnectionInterface $conn){
+    public function onClose(ConnectionInterface $conn): void {
         $this->log(['debug'], $conn, __FUNCTION__, 'close connection');
 
         $this->removeConnection($conn);
@@ -91,7 +91,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param ConnectionInterface $conn
      * @param \Exception $e
      */
-    public function onError(ConnectionInterface $conn, \Exception $e){
+    public function onError(ConnectionInterface $conn, \Exception $e): void {
         $this->log(['debug', 'error'], $conn, __FUNCTION__, $e->getMessage());
     }
 
@@ -100,7 +100,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param ConnectionInterface $conn
      * @param string $msg
      */
-    public function onMessage(ConnectionInterface $conn, $msg){
+    public function onMessage(ConnectionInterface $conn, $msg): void {
         // parse message into payload object
         $payload = $this->getPayloadFromMessage($msg);
 
@@ -161,7 +161,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * update meta data for $conn
      * @param ConnectionInterface $conn
      */
-    protected function updateConnection(ConnectionInterface $conn){
+    protected function updateConnection(ConnectionInterface $conn): void {
         if($this->hasConnection($conn)){
             $meta = [
                 'mTimeSend' => microtime(true)
@@ -189,7 +189,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param ConnectionInterface $conn
      * @param $data
      */
-    protected function send(ConnectionInterface $conn, string $data){
+    protected function send(ConnectionInterface $conn, string $data): void {
         $conn->send($data);
         $this->updateConnection($conn);
     }

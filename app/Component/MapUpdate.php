@@ -174,7 +174,7 @@ class MapUpdate extends AbstractMessageComponent {
      * @param ConnectionInterface $conn
      */
     #[\Override]
-    public function onOpen(ConnectionInterface $conn){
+    public function onOpen(ConnectionInterface $conn): void {
         parent::onOpen($conn);
     }
 
@@ -182,7 +182,7 @@ class MapUpdate extends AbstractMessageComponent {
      * @param ConnectionInterface $conn
      */
     #[\Override]
-    public function onClose(ConnectionInterface $conn){
+    public function onClose(ConnectionInterface $conn): void {
         parent::onClose($conn);
 
         $this->unSubscribeConnection($conn);
@@ -193,7 +193,7 @@ class MapUpdate extends AbstractMessageComponent {
      * @param \Exception $e
      */
     #[\Override]
-    public function onError(ConnectionInterface $conn, \Exception $e){
+    public function onError(ConnectionInterface $conn, \Exception $e): void {
         parent::onError($conn, $e);
 
         // close connection should trigger the onClose() callback for unSubscribe
@@ -205,7 +205,7 @@ class MapUpdate extends AbstractMessageComponent {
      * @param string $msg
      */
     #[\Override]
-    public function onMessage(ConnectionInterface $conn, $msg){
+    public function onMessage(ConnectionInterface $conn, $msg): void {
         parent::onMessage($conn, $msg);
     }
 
@@ -342,7 +342,7 @@ class MapUpdate extends AbstractMessageComponent {
      * subscribes an active connection from maps
      * @param ConnectionInterface $conn
      */
-    private function unSubscribeConnection(ConnectionInterface $conn){
+    private function unSubscribeConnection(ConnectionInterface $conn): void {
         $characterIds = $this->getCharacterIdsByConnection($conn);
         $this->unSubscribeCharacterIds($characterIds, $conn);
     }
@@ -950,7 +950,7 @@ class MapUpdate extends AbstractMessageComponent {
      * @param array<string, mixed> $meta
      * @param array<string, mixed> $log
      */
-    private function handleLogData(array $meta, array $log){
+    private function handleLogData(array $meta, array $log): void {
         $logHandler = new LogFileHandler((string)$meta['stream']);
         $logHandler->write($log);
     }
