@@ -444,7 +444,7 @@ class TcpSocket extends AbstractSocket{
 
             $this->connectionError(
                 $connection,
-                new Promise\Timer\TimeoutException($waitTimeout, $errorMessage)
+                new \RuntimeException($errorMessage)
             );
         });
     }
