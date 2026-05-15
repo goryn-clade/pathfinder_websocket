@@ -15,6 +15,7 @@ use React\EventLoop;
 use React\Socket;
 use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
+use Ratchet\Http\OriginCheck;
 use Ratchet\WebSocket\WsServer;
 
 class WebSockets {
@@ -40,19 +41,44 @@ class WebSockets {
     protected $debug;
 
     /**
+     * @var array<int, string>
+     */
+    protected $allowedOrigins;
+
+    /**
+     * @var string
+     */
+    protected $appEnv;
+
+    /**
      * WebSockets constructor.
      * @param string $dsn
      * @param int $wsListenPort
      * @param string $wsListenHost
      * @param int $debug
+     * @param array<int, string> $allowedOrigins
+     * @param string $appEnv
      */
-    function __construct(string $dsn, int $wsListenPort, string $wsListenHost, int $debug = 1){
+    function __construct(string $dsn, int $wsListenPort, string $wsListenHost, int $debug = 1, array $allowedOrigins = [], string $appEnv = ''){
         $this->dsn = $dsn;
         $this->wsListenPort = $wsListenPort;
         $this->wsListenHost = $wsListenHost;
         $this->debug = $debug;
+        $this->allowedOrigins = $allowedOrigins;
+        $this->appEnv = $appEnv;
 
         $this->startMapSocket();
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function resolveOrigins(): array {
+        $origins = $this->allowedOrigins;
+        if($this->appEnv !== 'production'){
+            $origins = array_values(array_unique(array_merge(['localhost', '127.0.0.1'], $origins)));
+        }
+        return $origins;
     }
 
     private function startMapSocket(): void{
@@ -100,8 +126,9 @@ class WebSockets {
         $webSock = new Socket\TcpServer($webSocketURI, $loop);
         new IoServer(
             new HttpServer(
-                new WsServer(
-                    $mapUpdate
+                new OriginCheck(
+                    new WsServer($mapUpdate),
+                    $this->resolveOrigins()
                 )
             ),
             $webSock

@@ -82,6 +82,15 @@ if(PHP_SAPI === 'cli'){
         exit(1);
     }
 
+    // Origin allow-list: required in production, auto-allows localhost in non-prod.
+    $appEnv = (string)getenv('APP_ENV');
+    $allowedOriginsRaw = (string)getenv('WS_ALLOWED_ORIGINS');
+    $allowedOrigins = array_values(array_filter(array_map('trim', explode(',', $allowedOriginsRaw))));
+    if($appEnv === 'production' && empty($allowedOrigins)){
+        fwrite(STDERR, 'FATAL: WS_ALLOWED_ORIGINS must not be empty in production. Set to comma-separated hostnames.' . PHP_EOL);
+        exit(1);
+    }
+
     if($options['debug']){
         // print if -debug > 0
         $showHelp($longOpts, $options);
@@ -89,7 +98,7 @@ if(PHP_SAPI === 'cli'){
 
     $dsn = 'tcp://' . $options['tcpHost'] . ':' . $options['tcpPort'];
 
-    new Socket\WebSockets($dsn, $options['wsPort'], $options['wsHost'], $options['debug']);
+    new Socket\WebSockets($dsn, $options['wsPort'], $options['wsHost'], $options['debug'], $allowedOrigins, $appEnv);
 
 }else{
     echo "Script need to be called by CLI!";

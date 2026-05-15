@@ -86,9 +86,9 @@ class Payload implements \JsonSerializable {
     }
 
     /**
-     * @return array|mixed
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): mixed {
-        return get_object_vars($this);
+        return ['task' => $this->task, 'load' => $this->load];
     }
 }
