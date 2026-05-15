@@ -25,6 +25,16 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
     const LOG_TEXT_SERVER_START         = 'start WebSocket server…';
 
     /**
+     * max concurrent WS connections before new ones are rejected
+     */
+    const MAX_CONNECTIONS               = 5000;
+
+    /**
+     * max inbound WS message size in bytes (64 KB)
+     */
+    const MAX_MESSAGE_SIZE              = 65536;
+
+    /**
      * store for logs
      * @var Store
      */
@@ -71,6 +81,12 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param ConnectionInterface $conn
      */
     public function onOpen(ConnectionInterface $conn): void {
+        if(count($this->connections) >= self::MAX_CONNECTIONS){
+            $this->log(['debug', 'info'], $conn, __FUNCTION__, 'connection limit reached; rejecting');
+            $conn->close();
+            return;
+        }
+
         $this->log(['debug'], $conn, __FUNCTION__, 'open connection');
 
         $this->addConnection($conn);
@@ -101,6 +117,12 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param string $msg
      */
     public function onMessage(ConnectionInterface $conn, $msg): void {
+        if(strlen((string)$msg) > self::MAX_MESSAGE_SIZE){
+            $this->log(['debug', 'info'], $conn, __FUNCTION__, 'message exceeds size limit; closing');
+            $conn->close();
+            return;
+        }
+
         // parse message into payload object
         $payload = $this->getPayloadFromMessage($msg);
 
