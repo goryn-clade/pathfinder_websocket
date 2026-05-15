@@ -74,17 +74,17 @@ if(PHP_SAPI === 'cli'){
 
     $setErrorReporting($options['debug']);
 
-    if($options['debug']){
-        // print if -debug > 0
-        $showHelp($longOpts, $options);
-    }
-
     // Fail-fast: WS_TOKEN_SECRET must be present and at least 32 valid hex chars.
     // An absent or short secret makes HMAC on per-character WS tokens trivially forgeable.
     $wsTokenSecret = (string)getenv('WS_TOKEN_SECRET');
     if(strlen($wsTokenSecret) < 32 || !ctype_xdigit($wsTokenSecret)){
         fwrite(STDERR, 'FATAL: WS_TOKEN_SECRET must be at least 32 hex characters. Generate with: openssl rand -hex 32' . PHP_EOL);
         exit(1);
+    }
+
+    if($options['debug']){
+        // print if -debug > 0
+        $showHelp($longOpts, $options);
     }
 
     $dsn = 'tcp://' . $options['tcpHost'] . ':' . $options['tcpPort'];
