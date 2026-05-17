@@ -10,7 +10,7 @@ if(PHP_SAPI === 'cli'){
     $longOpts = [
         'wsHost:'   => '0.0.0.0',       // WebSocket connection (for WebClients => Browser). '0.0.0.0' <-- any client can connect!
         'wsPort:'   => 8020,            // ↪ default WebSocket URI: 127.0.0.1:8020. This is where Nginx must proxy WebSocket traffic to
-        'tcpHost:'  => '127.0.0.1',     // TcpSocket connection (for WebServer ⇄ WebSocket)
+        'tcpHost:'  => '127.0.0.1',     // TcpSocket connection (for WebServer ⇄ WebSocket). Docker compose overrides this to 0.0.0.0 — required so the PHP container can reach this socket over the Docker bridge network. Do NOT revert that override.
         'tcpPort:'  => 5555,            // ↪ default TcpSocket URI: tcp://127.0.0.1:5555
         'debug:'    => 2                // Debug level [0-3] 0 = silent, 1 = errors, 2 = error + info, 3 = error + info + debug
     ];
