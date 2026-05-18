@@ -91,7 +91,7 @@ class TcpSocket extends AbstractSocket{
      * max length for JSON data string
      * -> throw OverflowException on exceed
      */
-    const JSON_DECODE_MAX_LENGTH    = 65536 * 4;
+    const JSON_DECODE_MAX_LENGTH    = 65536 * 6;
 
     /**
      * @see TcpSocket::DEFAULT_ACCEPT_TYPE
