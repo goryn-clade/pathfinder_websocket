@@ -1,9 +1,34 @@
 ## WebSocket server for [Pathfinder](https://github.com/exodus4d/pathfinder)
 
+> **Running v3.0+?** Deployment is handled by [pathfinder-containers](https://github.com/goryn-clade/pathfinder-containers) — the WebSocket server runs as the `pf-socket` service. See the [v3.0 changes](#v30--breaking-changes) section below for the new required env vars and origin checks.
+
 ### Requirements
-- _PHP_ (≥ v7.1)
+- _PHP_ (≥ v8.3 for v3.0; v7.1 for v2.x)
 - A working instance of *[Pathfinder](https://github.com/exodus4d/pathfinder)* (≥ v2.0.0-rc.1)
 - [_Composer_](https://getcomposer.org/download/) to install packages for the WebSocket server
+
+---
+
+## v3.0 — Breaking changes
+
+These apply when running the WebSocket server against Pathfinder v3.0+. For the full deployment guide see [pathfinder-containers](https://github.com/goryn-clade/pathfinder-containers).
+
+### New required environment variables
+
+The server now **fails fast on startup** if these are misconfigured:
+
+- **`WS_TOKEN_SECRET`** — HMAC secret that binds per-character WebSocket tokens to the PHP session. Must be at least 32 hex characters. Generate with `openssl rand -hex 32`. Missing or short values exit with code 1.
+- **`WS_ALLOWED_ORIGINS`** — comma-separated list of hostnames allowed to open WebSocket connections. **Required in production** (`APP_ENV=production`); empty in production exits with code 1. Non-prod auto-allows localhost.
+- **`APP_ENV`** — set to `production` to activate the origin allowlist enforcement.
+
+### Behavioral changes
+
+- **Origin allowlist enforcement** — the `WebSockets` constructor now takes `$allowedOrigins` and `$appEnv`. Browser clients whose `Origin` header is not on the allowlist are rejected.
+- **WS token HMAC binding** — tokens are HMAC-bound to the PHP session using `WS_TOKEN_SECRET`. Forged or replayed tokens are rejected.
+- **PHP 8.3** — the v3.0 container image runs PHP 8.3. If you run the server outside Docker, upgrade your PHP runtime accordingly.
+
+
+---
 
 ### Install
 1. Checkout this project in a **new** folder e.g. `/var/www/websocket.pathfinder`
