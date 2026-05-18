@@ -521,7 +521,7 @@ class MapUpdate extends AbstractMessageComponent {
     }
 
     /**
-     * check character access against $this->characterAccessData whitelist
+     * check character access against $this->characterAccessData allowlist
      * @param $characterId
      * @param $characterToken
      * @return array<string, mixed>
@@ -558,7 +558,7 @@ class MapUpdate extends AbstractMessageComponent {
     }
 
     /**
-     * check map access against $this->mapAccessData whitelist
+     * check map access against $this->mapAccessData allowlist
      * @param $characterId
      * @param $mapId
      * @param $mapToken
@@ -822,7 +822,7 @@ class MapUpdate extends AbstractMessageComponent {
     }
 
     /**
-     * set map access data (whitelist) tokens for map access
+     * set map access data (allowlist) tokens for map access
      * @param $connectionAccessData
      * @param array<string, mixed> $connectionAccessData
      * @param array<string, mixed> $connectionAccessData
