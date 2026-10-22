@@ -10,7 +10,7 @@ if(PHP_SAPI === 'cli'){
     $longOpts = [
         'wsHost:'   => '0.0.0.0',       // WebSocket connection (for WebClients => Browser). '0.0.0.0' <-- any client can connect!
         'wsPort:'   => 8020,            // ↪ default WebSocket URI: 127.0.0.1:8020. This is where Nginx must proxy WebSocket traffic to
-        'tcpHost:'  => '127.0.0.1',     // TcpSocket connection (for WebServer ⇄ WebSocket)
+        'tcpHost:'  => '127.0.0.1',     // TcpSocket connection (for WebServer ⇄ WebSocket). Docker compose overrides this to 0.0.0.0 — required so the PHP container can reach this socket over the Docker bridge network. Do NOT revert that override.
         'tcpPort:'  => 5555,            // ↪ default TcpSocket URI: tcp://127.0.0.1:5555
         'debug:'    => 2                // Debug level [0-3] 0 = silent, 1 = errors, 2 = error + info, 3 = error + info + debug
     ];
@@ -19,7 +19,7 @@ if(PHP_SAPI === 'cli'){
     $cliOpts = getopt('', array_keys($longOpts));
 
     $options = [];
-    array_walk($longOpts, function($defaultVal, $optKey) use ($cliOpts, &$options) {
+    array_walk($longOpts, function($defaultVal, $optKey) use ($cliOpts, &$options): void {
         $key = trim($optKey, ':');
         $val = $defaultVal;
         if(array_key_exists($key, $cliOpts)){
@@ -33,7 +33,7 @@ if(PHP_SAPI === 'cli'){
      * @param array $longOpts
      * @param array $options
      */
-    $showHelp = function(array $longOpts, array $options){
+    $showHelp = function(array $longOpts, array $options): void{
         $optKeys = array_keys($longOpts);
         $colors = new Socket\Log\ShellColors();
         $data = [];
@@ -63,16 +63,33 @@ if(PHP_SAPI === 'cli'){
      * set error reporting based on debug option value
      * @param int $debug
      */
-    $setErrorReporting = function(int $debug){
+    $setErrorReporting = function(int $debug): void{
         switch($debug){
             case 0: error_reporting(0); break; // Turn off all error reporting
             case 1: error_reporting(E_ERROR); break; // Errors only
-            case 2: error_reporting(E_ALL & ~E_NOTICE); break; // Report all errors except E_NOTICE
+            case 2: error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED); break; // Report all errors except E_NOTICE and E_DEPRECATED
             default: error_reporting(E_ALL);
         }
     };
 
     $setErrorReporting($options['debug']);
+
+    // Fail-fast: WS_TOKEN_SECRET must be present and at least 32 valid hex chars.
+    // An absent or short secret makes HMAC on per-character WS tokens trivially forgeable.
+    $wsTokenSecret = (string)getenv('WS_TOKEN_SECRET');
+    if(strlen($wsTokenSecret) < 32 || !ctype_xdigit($wsTokenSecret)){
+        fwrite(STDERR, 'FATAL: WS_TOKEN_SECRET must be at least 32 hex characters. Generate with: openssl rand -hex 32' . PHP_EOL);
+        exit(1);
+    }
+
+    // Origin allow-list: required in production, auto-allows localhost in non-prod.
+    $appEnv = (string)getenv('APP_ENV');
+    $allowedOriginsRaw = (string)getenv('WS_ALLOWED_ORIGINS');
+    $allowedOrigins = array_values(array_filter(array_map('trim', explode(',', $allowedOriginsRaw))));
+    if($appEnv === 'production' && empty($allowedOrigins)){
+        fwrite(STDERR, 'FATAL: WS_ALLOWED_ORIGINS must not be empty in production. Set to comma-separated hostnames.' . PHP_EOL);
+        exit(1);
+    }
 
     if($options['debug']){
         // print if -debug > 0
@@ -81,7 +98,7 @@ if(PHP_SAPI === 'cli'){
 
     $dsn = 'tcp://' . $options['tcpHost'] . ':' . $options['tcpPort'];
 
-    new Socket\WebSockets($dsn, $options['wsPort'], $options['wsHost'], $options['debug']);
+    new Socket\WebSockets($dsn, $options['wsPort'], $options['wsHost'], $options['debug'], $allowedOrigins, $appEnv);
 
 }else{
     echo "Script need to be called by CLI!";

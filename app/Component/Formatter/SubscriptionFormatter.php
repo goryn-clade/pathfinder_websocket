@@ -13,12 +13,12 @@ class SubscriptionFormatter{
 
     /**
      * group charactersData by systemId based on their current 'log' data
-     * @param array $charactersData
-     * @return array
+     * @param array<string, mixed> $charactersData
+     * @return array<string, mixed>
      */
     static function groupCharactersDataBySystem(array $charactersData) : array {
         $data = [];
-        foreach($charactersData as $characterId => $characterData){
+        foreach($charactersData as $characterData){
             // check if characterData has an active log (active system for character)
             $systemId = 0;
             if(isset($characterData['log']['system']['id'])){

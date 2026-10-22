@@ -100,14 +100,14 @@ class MapUpdate extends AbstractMessageComponent {
      *          ]
      *      ]
      * ]
-     * @var array
+     * @var array<string, mixed>
      */
     protected $characterAccessData;
 
     /**
      * access tokens for clients grouped by mapId
      * -> tokens are unique and expire onSubscribe!
-     * @var array
+     * @var array<string, mixed>
      */
     protected $mapAccessData;
 
@@ -123,7 +123,7 @@ class MapUpdate extends AbstractMessageComponent {
      *          '$conn3->resourceId' => $conn3
      *      ]
      * ]
-     * @var array
+     * @var array<string, mixed>
      */
     protected $characters;
 
@@ -140,7 +140,7 @@ class MapUpdate extends AbstractMessageComponent {
      *      ]
      * ]
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $subscriptions;
 
@@ -151,7 +151,7 @@ class MapUpdate extends AbstractMessageComponent {
      *      'charId_2' => $characterData2
      * ]
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $characterData;
 
@@ -173,14 +173,16 @@ class MapUpdate extends AbstractMessageComponent {
      * new client connection
      * @param ConnectionInterface $conn
      */
-    public function onOpen(ConnectionInterface $conn){
+    #[\Override]
+    public function onOpen(ConnectionInterface $conn): void {
         parent::onOpen($conn);
     }
 
     /**
      * @param ConnectionInterface $conn
      */
-    public function onClose(ConnectionInterface $conn){
+    #[\Override]
+    public function onClose(ConnectionInterface $conn): void {
         parent::onClose($conn);
 
         $this->unSubscribeConnection($conn);
@@ -190,7 +192,8 @@ class MapUpdate extends AbstractMessageComponent {
      * @param ConnectionInterface $conn
      * @param \Exception $e
      */
-    public function onError(ConnectionInterface $conn, \Exception $e){
+    #[\Override]
+    public function onError(ConnectionInterface $conn, \Exception $e): void {
         parent::onError($conn, $e);
 
         // close connection should trigger the onClose() callback for unSubscribe
@@ -201,7 +204,8 @@ class MapUpdate extends AbstractMessageComponent {
      * @param ConnectionInterface $conn
      * @param string $msg
      */
-    public function onMessage(ConnectionInterface $conn, $msg){
+    #[\Override]
+    public function onMessage(ConnectionInterface $conn, $msg): void {
         parent::onMessage($conn, $msg);
     }
 
@@ -283,6 +287,8 @@ class MapUpdate extends AbstractMessageComponent {
      * subscribes a connection to valid accessible maps
      * @param ConnectionInterface $conn
      * @param $subscribeData
+     * @param array<string, mixed> $subscribeData
+     * @param array<string, mixed> $subscribeData
      */
     private function subscribe(ConnectionInterface $conn, array $subscribeData) : void {
         $characterId = (int)$subscribeData['id'];
@@ -336,7 +342,7 @@ class MapUpdate extends AbstractMessageComponent {
      * subscribes an active connection from maps
      * @param ConnectionInterface $conn
      */
-    private function unSubscribeConnection(ConnectionInterface $conn){
+    private function unSubscribeConnection(ConnectionInterface $conn): void {
         $characterIds = $this->getCharacterIdsByConnection($conn);
         $this->unSubscribeCharacterIds($characterIds, $conn);
     }
@@ -468,7 +474,7 @@ class MapUpdate extends AbstractMessageComponent {
 
     /**
      * @param $mapId
-     * @return array
+     * @return array<string, mixed>
      */
     private function getCharacterIdsByMapId(int $mapId) : array {
         $characterIds = [];
@@ -515,37 +521,35 @@ class MapUpdate extends AbstractMessageComponent {
     }
 
     /**
-     * check character access against $this->characterAccessData whitelist
+     * check character access against $this->characterAccessData allowlist
      * @param $characterId
      * @param $characterToken
-     * @return array
+     * @return array<string, mixed>
      */
     private function checkCharacterAccess(int $characterId, string $characterToken) : array {
+        if(empty($this->characterAccessData[$characterId])) {
+            return [];
+        }
+        $parts = explode('.', $characterToken, 2);
+        if(count($parts) !== 2) {
+            return [];
+        }
+        [$clientNonce, $clientHmac] = $parts;
+        $secret = (string)getenv('WS_TOKEN_SECRET');
+
         $characterData = [];
-        if( !empty($characterAccessData = (array)$this->characterAccessData[$characterId]) ){
-            // check expire for $this->characterAccessData -> check ALL characters and remove expired
-            foreach($characterAccessData as $i => $data){
-                $deleteToken = false;
-
-                if( ((int)$data['expire'] - time()) > 0 ){
-                    // still valid -> check token
-                    if($characterToken === $data['token']){
-                        $characterData = $data['characterData'];
-                        $deleteToken = true;
-                        // NO break; here -> check other characterAccessData as well
-                    }
-                }else{
-                    // token expired
-                    $deleteToken = true;
-                }
-
-                if($deleteToken){
-                    unset($this->characterAccessData[$characterId][$i]);
-                    // -> check if tokens for this charId is empty
-                    if( empty($this->characterAccessData[$characterId]) ){
-                        unset($this->characterAccessData[$characterId]);
-
-                    }
+        foreach((array)$this->characterAccessData[$characterId] as $i => $data){
+            $expired = ((int)$data['expire'] - time()) <= 0;
+            $expectedHmac = hash_hmac('sha256', $clientNonce . ':' . $characterId . ':' . $data['sessionId'], $secret);
+            // NO break after match — check all entries to purge any other expired tokens
+            $valid = !$expired && $clientNonce === $data['nonce'] && hash_equals($expectedHmac, $clientHmac);
+            if($valid){
+                $characterData = $data['characterData'];
+            }
+            if($expired || $valid){
+                unset($this->characterAccessData[$characterId][$i]);
+                if(empty($this->characterAccessData[$characterId])){
+                    unset($this->characterAccessData[$characterId]);
                 }
             }
         }
@@ -554,43 +558,46 @@ class MapUpdate extends AbstractMessageComponent {
     }
 
     /**
-     * check map access against $this->mapAccessData whitelist
+     * check map access against $this->mapAccessData allowlist
      * @param $characterId
      * @param $mapId
      * @param $mapToken
      * @return bool
      */
     private function checkMapAccess(int $characterId, int $mapId, string $mapToken) : bool {
-        $access = false;
-        if( !empty($mapAccessData = (array)$this->mapAccessData[$mapId][$characterId]) ){
-            foreach($mapAccessData as $i => $data){
-                $deleteToken = false;
-                // check expire for $this->mapAccessData -> check ALL characters and remove expired
-                if( ((int)$data['expire'] - time()) > 0 ){
-                    // still valid -> check token
-                    if($mapToken === $data['token']){
-                        $access = true;
-                        $deleteToken = true;
-                    }
-                }else{
-                    // token expired
-                    $deleteToken = true;
-                }
+        if(empty($this->mapAccessData[$mapId][$characterId])) {
+            return false;
+        }
+        $parts = explode('.', $mapToken, 2);
+        if(count($parts) !== 2) {
+            return false;
+        }
+        [$clientNonce, $clientHmac] = $parts;
+        $secret = (string)getenv('WS_TOKEN_SECRET');
 
-                if($deleteToken){
-                    unset($this->mapAccessData[$mapId][$characterId][$i]);
-                    // -> check if tokens for this charId is empty
-                    if( empty($this->mapAccessData[$mapId][$characterId]) ){
-                        unset($this->mapAccessData[$mapId][$characterId]);
-                        // -> check if map has no access tokens left for characters
-                        if( empty($this->mapAccessData[$mapId]) ){
-                            unset($this->mapAccessData[$mapId]);
-                        }
-                    }
-                }
+        $access = false;
+        foreach((array)$this->mapAccessData[$mapId][$characterId] as $i => $data){
+            $expired = ((int)$data['expire'] - time()) <= 0;
+            $expectedHmac = hash_hmac('sha256', $clientNonce . ':' . $characterId . ':' . $data['sessionId'], $secret);
+            $valid = !$expired && $clientNonce === $data['nonce'] && hash_equals($expectedHmac, $clientHmac);
+            if($valid){
+                $access = true;
+            }
+            if($expired || $valid){
+                $this->removeMapAccessEntry($mapId, $characterId, $i);
             }
         }
         return $access;
+    }
+
+    private function removeMapAccessEntry(int $mapId, int $characterId, int $index) : void {
+        unset($this->mapAccessData[$mapId][$characterId][$index]);
+        if(empty($this->mapAccessData[$mapId][$characterId])){
+            unset($this->mapAccessData[$mapId][$characterId]);
+            if(empty($this->mapAccessData[$mapId])){
+                unset($this->mapAccessData[$mapId]);
+            }
+        }
     }
 
     /**
@@ -611,7 +618,7 @@ class MapUpdate extends AbstractMessageComponent {
      * receive data from TCP socket (main App)
      * -> send response back
      * @param string $task
-     * @param null|int|array $load
+     * @param null|int|array<string, mixed> $load
      * @return bool|float|int|null
      */
     public function receiveData(string $task, $load = null){
@@ -659,7 +666,8 @@ class MapUpdate extends AbstractMessageComponent {
     }
 
     /**
-     * @param array $characterData
+     * @param array<string, mixed> $characterData
+     * @param array<string, mixed> $characterData
      */
     private function setCharacterData(array $characterData) : void {
         if($characterId = (int)$characterData['id']){
@@ -669,24 +677,24 @@ class MapUpdate extends AbstractMessageComponent {
 
     /**
      * @param int $characterId
-     * @return array
+     * @return array<string, mixed>
      */
     private function getCharacterData(int $characterId) : array {
         return empty($this->characterData[$characterId]) ? [] : $this->characterData[$characterId];
     }
 
     /**
-     * @param array $characterIds
-     * @return array
+     * @param array<string, mixed> $characterIds
+     * @param array<string, mixed> $characterIds
+     * @return array<string, mixed>
      */
     private function getCharactersData(array $characterIds) : array {
-        return array_filter($this->characterData, function($characterId) use($characterIds) {
-            return in_array($characterId, $characterIds);
-        }, ARRAY_FILTER_USE_KEY);
+        return array_filter($this->characterData, fn($characterId) => in_array($characterId, $characterIds), ARRAY_FILTER_USE_KEY);
     }
 
     /**
-     * @param array $characterData
+     * @param array<string, mixed> $characterData
+     * @param array<string, mixed> $characterData
      */
     private function updateCharacterData(array $characterData) : void {
         $characterId = (int)$characterData['id'];
@@ -703,7 +711,8 @@ class MapUpdate extends AbstractMessageComponent {
     }
 
     /**
-     * @param array $mapIds
+     * @param array<string, mixed> $mapIds
+     * @param array<string, mixed> $mapIds
      */
     private function broadcastMapSubscriptions(array $mapIds) : void {
         $mapIds = array_unique($mapIds);
@@ -730,7 +739,8 @@ class MapUpdate extends AbstractMessageComponent {
 
     /**
      * @param string $task
-     * @param array $mapData
+     * @param array<string, mixed> $mapData
+     * @param array<string, mixed> $mapData
      * @return int
      */
     private function broadcastMapUpdate(string $task, array $mapData) : int {
@@ -763,10 +773,11 @@ class MapUpdate extends AbstractMessageComponent {
     /**
      * set/update map access for allowed characterIds
      * @param string $task
-     * @param array $accessData
+     * @param array<string, mixed> $accessData
+     * @param array<string, mixed> $accessData
      * @return int count of connected characters
      */
-    private function setAccess(string $task, $accessData) : int {
+    private function setAccess(string $task, array $accessData) : int {
         $newMapCharacterIds = [];
 
         if($mapId = (int)$accessData['id']){
@@ -784,7 +795,7 @@ class MapUpdate extends AbstractMessageComponent {
                 }
             }
 
-            $currentMapCharacterIds = (array)$this->subscriptions[$mapId]['characterIds'];
+            $currentMapCharacterIds = (array)($this->subscriptions[$mapId]['characterIds'] ?? []);
 
             // broadcast "map delete" to no longer valid characters ---------------------------------------------------
             $removedMapCharacterIds = array_keys(array_diff_key($currentMapCharacterIds, $newMapCharacterIds));
@@ -811,28 +822,28 @@ class MapUpdate extends AbstractMessageComponent {
     }
 
     /**
-     * set map access data (whitelist) tokens for map access
+     * set map access data (allowlist) tokens for map access
      * @param $connectionAccessData
+     * @param array<string, mixed> $connectionAccessData
+     * @param array<string, mixed> $connectionAccessData
      * @return bool
      */
-    private function setConnectionAccess($connectionAccessData){
+    private function setConnectionAccess(array $connectionAccessData){
         $response = false;
         $characterId = (int)$connectionAccessData['id'];
         $characterData = $connectionAccessData['characterData'];
-        $characterToken = $connectionAccessData['token'];
+        $characterToken = (string)$connectionAccessData['token'];
+        $sessionId = (string)($connectionAccessData['sessionId'] ?? '');
 
-        if(
-            $characterId &&
-            $characterData &&
-            $characterToken
-        ){
-            // expire time for character and map tokens
+        if($characterId && $characterData && $characterToken){
             $expireTime = time() + $this->mapAccessExpireSeconds;
+            // store the nonce (first segment of nonce.hmac) and session ID for HMAC verification on subscribe
+            $nonce = explode('.', $characterToken, 2)[0];
 
-            // tokens for character access
             $this->characterAccessData[$characterId][] = [
-                'token' => $characterToken,
-                'expire' => $expireTime,
+                'nonce'         => $nonce,
+                'sessionId'     => $sessionId,
+                'expire'        => $expireTime,
                 'characterData' => $characterData
             ];
 
@@ -840,8 +851,9 @@ class MapUpdate extends AbstractMessageComponent {
                 $mapId = (int)$mapData['id'];
 
                 $this->mapAccessData[$mapId][$characterId][] = [
-                    'token' => $mapData['token'],
-                    'expire' => $expireTime
+                    'nonce'     => $nonce,
+                    'sessionId' => $sessionId,
+                    'expire'    => $expireTime
                 ];
             }
 
@@ -854,7 +866,7 @@ class MapUpdate extends AbstractMessageComponent {
     /**
      * get stats data
      * -> lists all channels, subscribed characters + connection info
-     * @return array
+     * @return array<string, mixed>
      */
     protected function getSubscriptionStats() : array {
         $uniqueConnections = [];
@@ -879,7 +891,7 @@ class MapUpdate extends AbstractMessageComponent {
 
                 $characterStats = [
                     'characterId'   => $characterId,
-                    'characterName' => isset($characterData['name']) ? $characterData['name'] : null,
+                    'characterName' => $characterData['name'] ?? null,
                     'countCon'      => $connections->count(),
                     'connections'   => []
                 ];
@@ -923,8 +935,10 @@ class MapUpdate extends AbstractMessageComponent {
     /**
      * compare two assoc arrays by keys. Key order is ignored
      * -> if all keys from array1 exist in array2 && all keys from array2 exist in array 1, arrays are supposed to be equal
-     * @param array $array1
-     * @param array $array2
+     * @param array<string, mixed> $array1
+     * @param array<string, mixed> $array2
+     * @param array<string, mixed> $array1
+     * @param array<string, mixed> $array2
      * @return bool
      */
     protected function arraysEqualKeys(array $array1, array $array2) : bool {
@@ -933,10 +947,10 @@ class MapUpdate extends AbstractMessageComponent {
 
     /**
      * dispatch log writing to a LogFileHandler
-     * @param array $meta
-     * @param array $log
+     * @param array<string, mixed> $meta
+     * @param array<string, mixed> $log
      */
-    private function handleLogData(array $meta, array $log){
+    private function handleLogData(array $meta, array $log): void {
         $logHandler = new LogFileHandler((string)$meta['stream']);
         $logHandler->write($log);
     }

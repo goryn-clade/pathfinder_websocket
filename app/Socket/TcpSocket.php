@@ -94,24 +94,6 @@ class TcpSocket extends AbstractSocket{
     const JSON_DECODE_MAX_LENGTH    = 65536 * 6;
 
     /**
-     * @see TcpSocket::DEFAULT_ACCEPT_TYPE
-     * @var string
-     */
-    private $acceptType             = self::DEFAULT_ACCEPT_TYPE;
-
-    /**
-     * @see TcpSocket::DEFAULT_WAIT_TIMEOUT
-     * @var float
-     */
-    private $waitTimeout            = self::DEFAULT_WAIT_TIMEOUT;
-
-    /**
-     * @see TcpSocket::DEFAULT_END_WITH_RESPONSE
-     * @var bool
-     */
-    private $endWithResponse        = self::DEFAULT_END_WITH_RESPONSE;
-
-    /**
      * @see TcpSocket::DEFAULT_STATS
      * @var bool
      */
@@ -150,15 +132,20 @@ class TcpSocket extends AbstractSocket{
         EventLoop\LoopInterface $loop,
         MessageComponentInterface $handler,
         Store $store,
-        string $acceptType          = self::DEFAULT_ACCEPT_TYPE,
-        float $waitTimeout          = self::DEFAULT_WAIT_TIMEOUT,
-        bool $endWithResponse       = self::DEFAULT_END_WITH_RESPONSE
+        /**
+         * @see TcpSocket::DEFAULT_ACCEPT_TYPE
+         */
+        private readonly string $acceptType          = self::DEFAULT_ACCEPT_TYPE,
+        /**
+         * @see TcpSocket::DEFAULT_WAIT_TIMEOUT
+         */
+        private readonly float $waitTimeout          = self::DEFAULT_WAIT_TIMEOUT,
+        /**
+         * @see TcpSocket::DEFAULT_END_WITH_RESPONSE
+         */
+        private readonly bool $endWithResponse       = self::DEFAULT_END_WITH_RESPONSE
     ){
         parent::__construct($loop, $handler, $store);
-
-        $this->acceptType           = $acceptType;
-        $this->waitTimeout          = $waitTimeout;
-        $this->endWithResponse      = $endWithResponse;
         $this->connections          = new \SplObjectStorage();
         $this->startupTime          = time();
     }
@@ -166,8 +153,8 @@ class TcpSocket extends AbstractSocket{
     /**
      * @param Socket\ConnectionInterface $connection
      */
-    public function onConnect(Socket\ConnectionInterface $connection){
-        $this->log('debug', $connection, __FUNCTION__, 'open connection…');
+    public function onConnect(Socket\ConnectionInterface $connection): void{
+        $this->log(['debug'], $connection, __FUNCTION__, 'open connection…');
 
         if($this->isValidConnection($connection)){
             // connection can be used
@@ -181,24 +168,24 @@ class TcpSocket extends AbstractSocket{
                 ->then($this->initDispatch($connection))
                 ->then($this->initResponse($connection))
                 ->then(
-                    function(array $payload) use ($connection) {
+                    function(array $payload) use ($connection): void {
                         $this->log(['debug', 'info'], $connection,'DONE', 'task "' . $payload['task'] . '" done → response send');
                     },
-                    function(\Exception $e) use ($connection) {
+                    function(\Throwable $e) use ($connection): void {
                         $this->log(['debug', 'error'], $connection, 'ERROR', $e->getMessage());
                         $this->connectionError($connection, $e);
                     });
 
-            $connection->on('end', function() use ($connection) {
-                $this->log('debug', $connection, 'onEnd');
+            $connection->on('end', function() use ($connection): void {
+                $this->log(['debug'], $connection, 'onEnd');
             });
 
-            $connection->on('close', function() use ($connection) {
+            $connection->on('close', function() use ($connection): void {
                 $this->log(['debug'], $connection, 'onClose', 'close connection');
                 $this->removeConnection($connection);
             });
 
-            $connection->on('error', function(\Exception $e)  use ($connection) {
+            $connection->on('error', function(\Throwable $e) use ($connection): void {
                 $this->log(['debug', 'error'], $connection, 'onError', $e->getMessage());
             });
         }else{
@@ -222,21 +209,21 @@ class TcpSocket extends AbstractSocket{
                 $promise = Promise\Stream\first($streamDecoded);
 
                 // register on('data') for main input stream
-                $connection->on('data', function ($chunk) use ($stream) {
+                $connection->on('data', function ($chunk) use ($stream): void {
                     // send current data chunk to processing stream -> resolves promise
                     $stream->emit('data', [$chunk]);
                 });
 
                 return $promise;
             }else{
-                return new Promise\RejectedPromise(
+                return Promise\reject(
                     new \InvalidArgumentException(
                         sprintf(self::ERROR_ACCEPT_TYPE, $this->acceptType)
                     )
                 );
             }
         }else{
-            return new Promise\RejectedPromise(
+            return Promise\reject(
                 new \Exception(
                     sprintf(self::ERROR_STREAM_NOT_READABLE, $connection->getRemoteAddress())
                 )
@@ -258,7 +245,7 @@ class TcpSocket extends AbstractSocket{
                 $this->dispatch($connection, $deferred, $task, $load);
                 return $deferred->promise();
             }else{
-                return new Promise\RejectedPromise(
+                return Promise\reject(
                     new \InvalidArgumentException(self::ERROR_TASK_MISSING)
                 );
             }
@@ -271,7 +258,7 @@ class TcpSocket extends AbstractSocket{
      * @param string $task
      * @param null $load
      */
-    protected function dispatch(Socket\ConnectionInterface $connection, Promise\Deferred $deferred, string $task, $load = null) : void {
+    protected function dispatch(Socket\ConnectionInterface $connection, Promise\Deferred $deferred, string $task, mixed $load = null) : void {
         $addStatusData = false;
 
         switch($task){
@@ -313,7 +300,7 @@ class TcpSocket extends AbstractSocket{
      */
     protected function initResponse(Socket\ConnectionInterface $connection) : callable {
         return function(array $payload) use ($connection) : Promise\PromiseInterface {
-            $this->log('debug', $connection, 'initResponse', 'task "' . $payload['task'] . '" → init response');
+            $this->log(['debug'], $connection, 'initResponse', 'task "' . $payload['task'] . '" → init response');
 
             $deferred = new Promise\Deferred();
             $this->write($deferred, $connection, $payload);
@@ -325,7 +312,7 @@ class TcpSocket extends AbstractSocket{
     /**
      * @param Promise\Deferred $deferred
      * @param Socket\ConnectionInterface $connection
-     * @param array $payload
+     * @param array<string, mixed> $payload
      */
     protected function write(Promise\Deferred $deferred, Socket\ConnectionInterface $connection, array $payload) : void {
         $write = false;
@@ -357,9 +344,9 @@ class TcpSocket extends AbstractSocket{
      * -> if writable -> end() connection with $payload (close() is called by default)
      * -> if readable -> close() connection
      * @param Socket\ConnectionInterface $connection
-     * @param \Exception $e
+     * @param \Throwable $e
      */
-    protected function connectionError(Socket\ConnectionInterface $connection, \Exception $e){
+    protected function connectionError(Socket\ConnectionInterface $connection, \Throwable $e): void {
         $errorMessage = $e->getMessage();
         $this->log(['debug', 'error'], $connection, __FUNCTION__, $errorMessage);
 
@@ -390,7 +377,7 @@ class TcpSocket extends AbstractSocket{
      * @param Socket\ConnectionInterface $connection
      * @param string $timerName
      */
-    protected function cancelTimer(Socket\ConnectionInterface $connection, string $timerName){
+    protected function cancelTimer(Socket\ConnectionInterface $connection, string $timerName): void {
         if(
             $this->hasConnection($connection) &&
             ($data = (array)$this->connections->offsetGet($connection)) &&
@@ -408,13 +395,13 @@ class TcpSocket extends AbstractSocket{
      * cancels all previously set timers for a $connection
      * @param Socket\ConnectionInterface $connection
      */
-    protected function cancelTimers(Socket\ConnectionInterface $connection){
+    protected function cancelTimers(Socket\ConnectionInterface $connection): void {
         if(
             $this->hasConnection($connection) &&
             ($data = (array)$this->connections->offsetGet($connection)) &&
             isset($data['timers'])
         ){
-            foreach((array)$data['timers'] as $timerName => $timer){
+            foreach((array)$data['timers'] as $timer){
                 $this->loop->cancelTimer($timer);
             }
 
@@ -429,13 +416,13 @@ class TcpSocket extends AbstractSocket{
      * @param float $interval
      * @param callable $timerCallback
      */
-    protected function setTimer(Socket\ConnectionInterface $connection, string $timerName, float $interval, callable $timerCallback){
+    protected function setTimer(Socket\ConnectionInterface $connection, string $timerName, float $interval, callable $timerCallback): void {
         if(
             $this->hasConnection($connection) &&
             ($data = (array)$this->connections->offsetGet($connection)) &&
             isset($data['timers'])
         ){
-            $data['timers'][$timerName] = $this->loop->addTimer($interval, function() use ($connection, $timerCallback) {
+            $data['timers'][$timerName] = $this->loop->addTimer($interval, function() use ($connection, $timerCallback): void {
                 $timerCallback($connection);
             });
 
@@ -450,14 +437,14 @@ class TcpSocket extends AbstractSocket{
      * @param Socket\ConnectionInterface $connection
      * @param float $waitTimeout
      */
-    protected function setTimerTimeout(Socket\ConnectionInterface $connection, float $waitTimeout = self::DEFAULT_WAIT_TIMEOUT){
+    protected function setTimerTimeout(Socket\ConnectionInterface $connection, float $waitTimeout = self::DEFAULT_WAIT_TIMEOUT): void {
         $this->cancelTimer($connection, 'disconnectTimer');
-        $this->setTimer($connection, 'disconnectTimer', $waitTimeout, function(Socket\ConnectionInterface $connection) use ($waitTimeout) {
+        $this->setTimer($connection, 'disconnectTimer', $waitTimeout, function(Socket\ConnectionInterface $connection) use ($waitTimeout): void {
             $errorMessage = sprintf(self::ERROR_WAIT_TIMEOUT, $waitTimeout);
 
             $this->connectionError(
                 $connection,
-                new Promise\Timer\TimeoutException($waitTimeout, $errorMessage)
+                new \RuntimeException($errorMessage)
             );
         });
     }
@@ -466,7 +453,7 @@ class TcpSocket extends AbstractSocket{
      * add new connection to global pool
      * @param Socket\ConnectionInterface $connection
      */
-    protected function addConnection(Socket\ConnectionInterface $connection){
+    protected function addConnection(Socket\ConnectionInterface $connection): void {
         if(!$this->hasConnection($connection)){
             $this->connections->attach($connection, [
                 'remoteAddress' => $connection->getRemoteAddress(),
@@ -486,7 +473,7 @@ class TcpSocket extends AbstractSocket{
      * remove $connection from global connection pool
      * @param Socket\ConnectionInterface $connection
      */
-    protected function removeConnection(Socket\ConnectionInterface $connection){
+    protected function removeConnection(Socket\ConnectionInterface $connection): void {
         if($this->hasConnection($connection)){
             $this->log(['debug'], $connection, __FUNCTION__, 'remove connection');
             $this->cancelTimers($connection);
@@ -499,7 +486,7 @@ class TcpSocket extends AbstractSocket{
      * @param string $task
      * @param null $load
      * @param bool $addStats
-     * @return array
+     * @return array<string, string|mixed[]|null>
      */
     protected function newPayload(string $task, $load = null, bool $addStats = false) : array {
         $payload = [
@@ -527,7 +514,7 @@ class TcpSocket extends AbstractSocket{
     /**
      * get socket server statistics
      * -> e.g. connected clients count
-     * @return array
+     * @return array<string, mixed>
      */
     protected function getStats() : array {
         return [
@@ -538,7 +525,7 @@ class TcpSocket extends AbstractSocket{
 
     /**
      * get TcpSocket stats data
-     * @return array
+     * @return array<string, int|mixed[]>
      */
     protected function getSocketStats() : array {
         return [

@@ -25,6 +25,16 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
     const LOG_TEXT_SERVER_START         = 'start WebSocket server…';
 
     /**
+     * max concurrent WS connections before new ones are rejected
+     */
+    const MAX_CONNECTIONS               = 5000;
+
+    /**
+     * max inbound WS message size in bytes (64 KB)
+     */
+    const MAX_MESSAGE_SIZE              = 65536;
+
+    /**
      * store for logs
      * @var Store
      */
@@ -43,7 +53,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      *          'data' => null
      *      ]
      * ]
-     * @var array
+     * @var array<string, mixed>
      */
     private $connections;
 
@@ -70,7 +80,13 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * new client connection onOpen
      * @param ConnectionInterface $conn
      */
-    public function onOpen(ConnectionInterface $conn){
+    public function onOpen(ConnectionInterface $conn): void {
+        if(count($this->connections) >= self::MAX_CONNECTIONS){
+            $this->log(['debug', 'info'], $conn, __FUNCTION__, 'connection limit reached; rejecting');
+            $conn->close();
+            return;
+        }
+
         $this->log(['debug'], $conn, __FUNCTION__, 'open connection');
 
         $this->addConnection($conn);
@@ -80,7 +96,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * client connection onClose
      * @param ConnectionInterface $conn
      */
-    public function onClose(ConnectionInterface $conn){
+    public function onClose(ConnectionInterface $conn): void {
         $this->log(['debug'], $conn, __FUNCTION__, 'close connection');
 
         $this->removeConnection($conn);
@@ -91,7 +107,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param ConnectionInterface $conn
      * @param \Exception $e
      */
-    public function onError(ConnectionInterface $conn, \Exception $e){
+    public function onError(ConnectionInterface $conn, \Exception $e): void {
         $this->log(['debug', 'error'], $conn, __FUNCTION__, $e->getMessage());
     }
 
@@ -100,7 +116,13 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param ConnectionInterface $conn
      * @param string $msg
      */
-    public function onMessage(ConnectionInterface $conn, $msg){
+    public function onMessage(ConnectionInterface $conn, $msg): void {
+        if(strlen((string)$msg) > self::MAX_MESSAGE_SIZE){
+            $this->log(['debug', 'info'], $conn, __FUNCTION__, 'message exceeds size limit; closing');
+            $conn->close();
+            return;
+        }
+
         // parse message into payload object
         $payload = $this->getPayloadFromMessage($msg);
 
@@ -161,7 +183,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * update meta data for $conn
      * @param ConnectionInterface $conn
      */
-    protected function updateConnection(ConnectionInterface $conn){
+    protected function updateConnection(ConnectionInterface $conn): void {
         if($this->hasConnection($conn)){
             $meta = [
                 'mTimeSend' => microtime(true)
@@ -173,12 +195,12 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
     /**
      * get meta data from $conn
      * @param ConnectionInterface $conn
-     * @return array
+     * @return array<string, mixed>
      */
     protected function getConnectionData(ConnectionInterface $conn) : array {
         $meta = [];
         if($this->hasConnection($conn)){
-            $meta = (array)$this->connections[$conn->resourceId]['data'];
+            $meta = (array)($this->connections[$conn->resourceId]['data'] ?? []);
         }
         return $meta;
     }
@@ -189,7 +211,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param ConnectionInterface $conn
      * @param $data
      */
-    protected function send(ConnectionInterface $conn, $data){
+    protected function send(ConnectionInterface $conn, string $data): void {
         $conn->send($data);
         $this->updateConnection($conn);
     }
@@ -207,7 +229,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      */
     protected function getPayloadFromMessage($msg) : ?Payload {
         $payload = null;
-        $msg = (array)json_decode($msg, true);
+        $msg = (array)json_decode((string) $msg, true);
 
         if(isset($msg['task'], $msg['load'])){
             $payload = $this->newPayload((string)$msg['task'], $msg['load']);
@@ -219,10 +241,10 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
     /**
      * @param string $task
      * @param null $load
-     * @param array|null $characterIds
+     * @param array<string, mixed>|null $characterIds
      * @return Payload|null
      */
-    protected function newPayload(string $task, $load = null, ?array $characterIds = null) : ?Payload {
+    protected function newPayload(string $task, mixed $load = null, ?array $characterIds = null) : ?Payload {
         $payload = null;
         try{
             $payload = new Payload($task, $load, $characterIds);
@@ -235,7 +257,7 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
 
     /**
      * get WebSocket stats data
-     * @return array
+     * @return array<string, mixed>
      */
     public function getSocketStats() : array {
         return [
@@ -250,8 +272,9 @@ abstract class AbstractMessageComponent implements MessageComponentInterface {
      * @param ConnectionInterface|null $connection
      * @param string $action
      * @param string $message
+     * @param array<string, mixed> $logTypes
      */
-    protected function log($logTypes, ?ConnectionInterface $connection, string $action, string $message = '') : void {
+    protected function log(array $logTypes, ?ConnectionInterface $connection, string $action, string $message = '') : void {
         if($this->logStore){
             $remoteAddress = $connection ? $connection->remoteAddress : null;
             $resourceId = $connection ? $connection->resourceId : null;

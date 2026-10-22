@@ -8,13 +8,13 @@ class ShellColors {
 
     /**
      * all foreground color codes
-     * @var array
+     * @var array<string, mixed>
      */
     private $foregroundColors = [];
 
     /**
      * all background color codes
-     * @var array
+     * @var array<string, mixed>
      */
     private $backgroundColors = [];
 
@@ -74,7 +74,7 @@ class ShellColors {
 
     /**
      * returns all foreground color names
-     * @return array
+     * @return array<string, mixed>
      */
     public function getForegroundColors() : array {
         return array_keys($this->foregroundColors);
@@ -82,7 +82,7 @@ class ShellColors {
 
     /**
      * returns all background color names
-     * @return array
+     * @return array<string, mixed>
      */
     public function getBackgroundColors() : array {
         return array_keys($this->backgroundColors);

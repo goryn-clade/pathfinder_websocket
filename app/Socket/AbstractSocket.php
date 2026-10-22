@@ -56,8 +56,9 @@ abstract class AbstractSocket {
      * @param Socket\ConnectionInterface|null $connection
      * @param string $action
      * @param string $message
+     * @param string[] $logTypes
      */
-    public function log($logTypes, ?Socket\ConnectionInterface $connection, string $action, string $message = '') : void {
+    public function log(array $logTypes, ?Socket\ConnectionInterface $connection, string $action, string $message = '') : void {
         if(!$this->logStore->isLocked()){
             $remoteAddress = $connection ? $connection->getRemoteAddress() : null;
             $this->logStore->log($logTypes, $remoteAddress, null, $action, $message);
