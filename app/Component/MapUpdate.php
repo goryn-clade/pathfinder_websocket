@@ -795,7 +795,7 @@ class MapUpdate extends AbstractMessageComponent {
                 }
             }
 
-            $currentMapCharacterIds = (array)$this->subscriptions[$mapId]['characterIds'];
+            $currentMapCharacterIds = (array)($this->subscriptions[$mapId]['characterIds'] ?? []);
 
             // broadcast "map delete" to no longer valid characters ---------------------------------------------------
             $removedMapCharacterIds = array_keys(array_diff_key($currentMapCharacterIds, $newMapCharacterIds));
