@@ -113,7 +113,7 @@ class WebSockets {
             $tcpSocket->onConnect($connection);
         });
 
-        $server->on('error', function(\Exception $e) use ($tcpSocket): void {
+        $server->on('error', function(\Throwable $e) use ($tcpSocket): void {
             $tcpSocket->log(['debug', 'error'], null, 'onError', $e->getMessage());
         });
 

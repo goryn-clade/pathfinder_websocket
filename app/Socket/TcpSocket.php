@@ -171,7 +171,7 @@ class TcpSocket extends AbstractSocket{
                     function(array $payload) use ($connection): void {
                         $this->log(['debug', 'info'], $connection,'DONE', 'task "' . $payload['task'] . '" done → response send');
                     },
-                    function(\Exception $e) use ($connection): void {
+                    function(\Throwable $e) use ($connection): void {
                         $this->log(['debug', 'error'], $connection, 'ERROR', $e->getMessage());
                         $this->connectionError($connection, $e);
                     });
@@ -185,7 +185,7 @@ class TcpSocket extends AbstractSocket{
                 $this->removeConnection($connection);
             });
 
-            $connection->on('error', function(\Exception $e)  use ($connection): void {
+            $connection->on('error', function(\Throwable $e) use ($connection): void {
                 $this->log(['debug', 'error'], $connection, 'onError', $e->getMessage());
             });
         }else{
@@ -216,14 +216,14 @@ class TcpSocket extends AbstractSocket{
 
                 return $promise;
             }else{
-                return new Promise\RejectedPromise(
+                return Promise\reject(
                     new \InvalidArgumentException(
                         sprintf(self::ERROR_ACCEPT_TYPE, $this->acceptType)
                     )
                 );
             }
         }else{
-            return new Promise\RejectedPromise(
+            return Promise\reject(
                 new \Exception(
                     sprintf(self::ERROR_STREAM_NOT_READABLE, $connection->getRemoteAddress())
                 )
@@ -245,7 +245,7 @@ class TcpSocket extends AbstractSocket{
                 $this->dispatch($connection, $deferred, $task, $load);
                 return $deferred->promise();
             }else{
-                return new Promise\RejectedPromise(
+                return Promise\reject(
                     new \InvalidArgumentException(self::ERROR_TASK_MISSING)
                 );
             }
@@ -344,9 +344,9 @@ class TcpSocket extends AbstractSocket{
      * -> if writable -> end() connection with $payload (close() is called by default)
      * -> if readable -> close() connection
      * @param Socket\ConnectionInterface $connection
-     * @param \Exception $e
+     * @param \Throwable $e
      */
-    protected function connectionError(Socket\ConnectionInterface $connection, \Exception $e): void {
+    protected function connectionError(Socket\ConnectionInterface $connection, \Throwable $e): void {
         $errorMessage = $e->getMessage();
         $this->log(['debug', 'error'], $connection, __FUNCTION__, $errorMessage);
 
