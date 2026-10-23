@@ -58,11 +58,11 @@ class ShellColors {
         $coloredString = "";
 
         // Check if given foreground color found
-        if (isset($this->foregroundColors[$foregroundColor])) {
+        if ($foregroundColor !== null && isset($this->foregroundColors[$foregroundColor])) {
             $coloredString .= "\033[" . $this->foregroundColors[$foregroundColor] . "m";
         }
         // Check if given background color found
-        if (isset($this->backgroundColors[$backgroundColor])) {
+        if ($backgroundColor !== null && isset($this->backgroundColors[$backgroundColor])) {
             $coloredString .= "\033[" . $this->backgroundColors[$backgroundColor] . "m";
         }
 

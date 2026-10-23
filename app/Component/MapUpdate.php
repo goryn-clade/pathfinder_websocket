@@ -259,7 +259,7 @@ class MapUpdate extends AbstractMessageComponent {
         $payload->setLoad($load);
 
         $connections = new \SplObjectStorage();
-        $connections->attach($conn);
+        $connections->offsetSet($conn);
 
         $this->broadcast($connections, $payload);
 
@@ -511,9 +511,9 @@ class MapUpdate extends AbstractMessageComponent {
             foreach(array_keys($this->characters[$characterId]) as $resourceId){
                 if(
                     $this->hasConnectionId($resourceId) &&
-                    !$connections->contains($conn = $this->getConnection($resourceId))
+                    !$connections->offsetExists($conn = $this->getConnection($resourceId))
                 ){
-                    $connections->attach($conn);
+                    $connections->offsetSet($conn);
                 }
             }
         }

@@ -83,7 +83,7 @@ class WebSockets {
 
     private function startMapSocket(): void{
         // global EventLoop
-        $loop   = EventLoop\Factory::create();
+        $loop   = EventLoop\Loop::get();
 
         // new Stores for logging -------------------------------------------------------------------------------------
         $webSocketLogStore = new Store(Component\MapUpdate::COMPONENT_NAME);
@@ -102,7 +102,7 @@ class WebSockets {
         // TCP Socket -------------------------------------------------------------------------------------------------
         $tcpSocket = new TcpSocket($loop, $mapUpdate, $tcpSocketLogStore);
         // TCP Server (WebServer <-> TCPServer <-> TCPSocket communication)
-        $server = new Socket\Server($this->dsn, $loop, [
+        $server = new Socket\SocketServer($this->dsn, [
             'tcp' => [
                 'backlog' => 20,
                 'so_reuseport' => true
