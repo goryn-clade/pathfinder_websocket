@@ -349,12 +349,6 @@ parameters:
 			path: app/Log/ShellColors.php
 
 		-
-			message: '#^Possibly invalid array key type string\|null\.$#'
-			identifier: offsetAccess.invalidOffset
-			count: 4
-			path: app/Log/ShellColors.php
-
-		-
 			message: '#^If condition is always true\.$#'
 			identifier: if.alwaysTrue
 			count: 1
