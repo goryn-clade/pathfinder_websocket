@@ -67,18 +67,6 @@ parameters:
 			path: app/Component/MapUpdate.php
 
 		-
-			message: '#^Call to deprecated method attach\(\) of class SplObjectStorage\.$#'
-			identifier: method.deprecated
-			count: 2
-			path: app/Component/MapUpdate.php
-
-		-
-			message: '#^Call to deprecated method contains\(\) of class SplObjectStorage\.$#'
-			identifier: method.deprecated
-			count: 1
-			path: app/Component/MapUpdate.php
-
-		-
 			message: '#^Cannot access offset ''id'' on array\<string, mixed\>\|int\|null\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -253,13 +241,7 @@ parameters:
 			path: app/Component/MapUpdate.php
 
 		-
-			message: '#^Parameter \#1 \$object of method SplObjectStorage\<object,mixed\>\:\:attach\(\) expects object, Ratchet\\ConnectionInterface\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Component/MapUpdate.php
-
-		-
-			message: '#^Parameter \#1 \$object of method SplObjectStorage\<object,mixed\>\:\:contains\(\) expects object, Ratchet\\ConnectionInterface\|null given\.$#'
+			message: '#^Parameter \#1 \$object of method SplObjectStorage\<object,mixed\>\:\:offsetExists\(\) expects object, Ratchet\\ConnectionInterface\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Component/MapUpdate.php
@@ -421,24 +403,6 @@ parameters:
 			path: app/Socket/TcpSocket.php
 
 		-
-			message: '#^Call to deprecated method attach\(\) of class SplObjectStorage\.$#'
-			identifier: method.deprecated
-			count: 1
-			path: app/Socket/TcpSocket.php
-
-		-
-			message: '#^Call to deprecated method contains\(\) of class SplObjectStorage\.$#'
-			identifier: method.deprecated
-			count: 1
-			path: app/Socket/TcpSocket.php
-
-		-
-			message: '#^Call to deprecated method detach\(\) of class SplObjectStorage\.$#'
-			identifier: method.deprecated
-			count: 1
-			path: app/Socket/TcpSocket.php
-
-		-
 			message: '#^Call to sprintf contains an invalid placeholder\.$#'
 			identifier: argument.sprintf
 			count: 1
@@ -479,33 +443,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Socket/TcpSocket.php
-
-		-
-			message: '''
-				#^Call to method __construct\(\) of deprecated class React\\Socket\\Server\:
-				1\.9\.0 See `SocketServer` instead$#
-			'''
-			identifier: method.deprecatedClass
-			count: 1
-			path: app/WebSockets.php
-
-		-
-			message: '''
-				#^Call to method create\(\) of deprecated class React\\EventLoop\\Factory\:
-				1\.2\.0 See Loop instead\.$#
-			'''
-			identifier: staticMethod.deprecatedClass
-			count: 1
-			path: app/WebSockets.php
-
-		-
-			message: '''
-				#^Instantiation of deprecated class React\\Socket\\Server\:
-				1\.9\.0 See `SocketServer` instead$#
-			'''
-			identifier: new.deprecatedClass
-			count: 1
-			path: app/WebSockets.php
 
 		-
 			message: '#^Binary operation "\." between ''tcp\://'' and int\|list\<mixed\>\|string results in an error\.$#'

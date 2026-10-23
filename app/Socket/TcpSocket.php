@@ -369,7 +369,7 @@ class TcpSocket extends AbstractSocket{
      * @return bool
      */
     protected function hasConnection(Socket\ConnectionInterface $connection) : bool {
-        return $this->connections->contains($connection);
+        return $this->connections->offsetExists($connection);
     }
 
     /**
@@ -455,7 +455,7 @@ class TcpSocket extends AbstractSocket{
      */
     protected function addConnection(Socket\ConnectionInterface $connection): void {
         if(!$this->hasConnection($connection)){
-            $this->connections->attach($connection, [
+            $this->connections->offsetSet($connection, [
                 'remoteAddress' => $connection->getRemoteAddress(),
                 'timers' => []
             ]);
@@ -477,7 +477,7 @@ class TcpSocket extends AbstractSocket{
         if($this->hasConnection($connection)){
             $this->log(['debug'], $connection, __FUNCTION__, 'remove connection');
             $this->cancelTimers($connection);
-            $this->connections->detach($connection);
+            $this->connections->offsetUnset($connection);
         }
     }
 
