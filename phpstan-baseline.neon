@@ -1,0 +1,544 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property Ratchet\\ConnectionInterface\:\:\$remoteAddress\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Component/AbstractMessageComponent.php
+
+		-
+			message: '#^Access to an undefined property Ratchet\\ConnectionInterface\:\:\$resourceId\.$#'
+			identifier: property.notFound
+			count: 6
+			path: app/Component/AbstractMessageComponent.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: app/Component/AbstractMessageComponent.php
+
+		-
+			message: '#^Offset int does not exist on array\<string, mixed\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Component/AbstractMessageComponent.php
+
+		-
+			message: '#^Offset int on array\<string, mixed\> in isset\(\) does not exist\.$#'
+			identifier: isset.offset
+			count: 1
+			path: app/Component/AbstractMessageComponent.php
+
+		-
+			message: '#^Parameter \#1 \$logTypes of method Exodus4D\\Socket\\Component\\AbstractMessageComponent\:\:log\(\) expects array\<string, mixed\>, array\<int, string\> given\.$#'
+			identifier: argument.type
+			count: 7
+			path: app/Component/AbstractMessageComponent.php
+
+		-
+			message: '#^Parameter \#2 \$load of method Exodus4D\\Socket\\Component\\AbstractMessageComponent\:\:newPayload\(\) expects null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/AbstractMessageComponent.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Component\\Formatter\\SubscriptionFormatter\:\:groupCharactersDataBySystem\(\) should return array\<string, mixed\> but returns list\<object\{\}&stdClass\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Component/Formatter/SubscriptionFormatter.php
+
+		-
+			message: '#^Access to an undefined property Ratchet\\ConnectionInterface\:\:\$resourceId\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$remoteAddress\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$resourceId\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Call to deprecated method attach\(\) of class SplObjectStorage\.$#'
+			identifier: method.deprecated
+			count: 2
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Call to deprecated method contains\(\) of class SplObjectStorage\.$#'
+			identifier: method.deprecated
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Cannot access offset ''id'' on array\<string, mixed\>\|int\|null\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Cannot access offset ''log'' on array\<string, mixed\>\|int\|null\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Cannot access offset ''meta'' on array\<string, mixed\>\|int\|null\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Cannot unset offset int on array\<string, mixed\>\.$#'
+			identifier: unset.offset
+			count: 4
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Cannot unset offset int on non\-empty\-array\<string, mixed\>\.$#'
+			identifier: unset.offset
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Cannot unset offset int\<min, \-1\>\|int\<1, max\> on array\<string, mixed\>\.$#'
+			identifier: unset.offset
+			count: 4
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Component\\MapUpdate\:\:broadcast\(\) has parameter \$connections with generic class SplObjectStorage but does not specify its types\: TObject, TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Component\\MapUpdate\:\:getCharacterIdsByConnection\(\) should return array\<int\> but returns list\<string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Component\\MapUpdate\:\:getCharacterIdsByMapId\(\) should return array\<string, mixed\> but returns list\<\(int\|string\)\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Component\\MapUpdate\:\:getConnectionsByCharacterId\(\) return type with generic class SplObjectStorage does not specify its types\: TObject, TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Component\\MapUpdate\:\:getConnectionsByCharacterIds\(\) return type with generic class SplObjectStorage does not specify its types\: TObject, TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Component\\MapUpdate\:\:getMapIdsByCharacterId\(\) should return array\<int\> but returns list\<string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Component\\MapUpdate\:\:removeMapAccessEntry\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Component\\MapUpdate\:\:setConnectionAccess\(\) should return bool but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Offset int does not exist on array\<string, mixed\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Offset int on array\<string, mixed\> in empty\(\) does not exist\.$#'
+			identifier: empty.offset
+			count: 5
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Offset int on array\<string, mixed\> in isset\(\) does not exist\.$#'
+			identifier: isset.offset
+			count: 2
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Offset int\<min, \-1\>\|int\<1, max\> does not exist on array\<string, mixed\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Offset int\<min, \-1\>\|int\<1, max\> on array\<string, mixed\> on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#1 \$characterData of method Exodus4D\\Socket\\Component\\MapUpdate\:\:updateCharacterData\(\) expects array\<string, mixed\>, array\<int\|string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#1 \$conn of method Exodus4D\\Socket\\Component\\AbstractMessageComponent\:\:getConnectionData\(\) expects Ratchet\\ConnectionInterface, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#1 \$conn of method Exodus4D\\Socket\\Component\\AbstractMessageComponent\:\:send\(\) expects Ratchet\\ConnectionInterface, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#1 \$connectionAccessData of method Exodus4D\\Socket\\Component\\MapUpdate\:\:setConnectionAccess\(\) expects array\<string, mixed\>, array\<string, mixed\>\|int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#1 \$load of method Exodus4D\\Socket\\Data\\Payload\:\:setLoad\(\) expects null, array\<string, array\<string, mixed\>\|bool\|float\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#1 \$logTypes of method Exodus4D\\Socket\\Component\\AbstractMessageComponent\:\:log\(\) expects array\<string, mixed\>, array\<int, string\> given\.$#'
+			identifier: argument.type
+			count: 8
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#1 \$mapId of method Exodus4D\\Socket\\Component\\MapUpdate\:\:getCharacterIdsByMapId\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#1 \$mapIds of method Exodus4D\\Socket\\Component\\MapUpdate\:\:broadcastMapSubscriptions\(\) expects array\<string, mixed\>, array\<int, int\<min, \-1\>\|int\<1, max\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#1 \$mapIds of method Exodus4D\\Socket\\Component\\MapUpdate\:\:broadcastMapSubscriptions\(\) expects array\<string, mixed\>, list\<int\<min, \-1\>\|int\<1, max\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#1 \$mapIds of method Exodus4D\\Socket\\Component\\MapUpdate\:\:broadcastMapSubscriptions\(\) expects array\<string, mixed\>, list\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#1 \$object of method SplObjectStorage\<object,mixed\>\:\:attach\(\) expects object, Ratchet\\ConnectionInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#1 \$object of method SplObjectStorage\<object,mixed\>\:\:contains\(\) expects object, Ratchet\\ConnectionInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#1 \$resourceId of method Exodus4D\\Socket\\Component\\AbstractMessageComponent\:\:getConnection\(\) expects int, int\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#1 \$resourceId of method Exodus4D\\Socket\\Component\\AbstractMessageComponent\:\:hasConnectionId\(\) expects int, int\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#2 \$accessData of method Exodus4D\\Socket\\Component\\MapUpdate\:\:setAccess\(\) expects array\<string, mixed\>, array\<string, mixed\>\|int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#2 \$data of method Exodus4D\\Socket\\Component\\AbstractMessageComponent\:\:send\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#2 \$load of method Exodus4D\\Socket\\Component\\AbstractMessageComponent\:\:newPayload\(\) expects null, int\<min, \-1\>\|int\<1, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#2 \$mapData of method Exodus4D\\Socket\\Component\\MapUpdate\:\:broadcastMapUpdate\(\) expects array\<string, mixed\>, array\<int\|string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#2 \$payload of method Exodus4D\\Socket\\Component\\MapUpdate\:\:broadcast\(\) expects Exodus4D\\Socket\\Data\\Payload, Exodus4D\\Socket\\Data\\Payload\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Parameter \#3 \$characterIds of method Exodus4D\\Socket\\Component\\AbstractMessageComponent\:\:newPayload\(\) expects array\<string, mixed\>\|null, list\<\*NEVER\*\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Property Exodus4D\\Socket\\Component\\MapUpdate\:\:\$characterAccessData \(array\<string, mixed\>\) does not accept array\<int\|string, mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Property Exodus4D\\Socket\\Component\\MapUpdate\:\:\$characterData \(array\<string, mixed\>\) does not accept array\<int\|string, mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Property Exodus4D\\Socket\\Component\\MapUpdate\:\:\$characters \(array\<string, mixed\>\) does not accept array\<int\|string, mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Property Exodus4D\\Socket\\Component\\MapUpdate\:\:\$healthCheckToken \(int\|null\) does not accept float\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Property Exodus4D\\Socket\\Component\\MapUpdate\:\:\$mapAccessData \(array\<string, mixed\>\) does not accept array\<int\|string, mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Property Exodus4D\\Socket\\Component\\MapUpdate\:\:\$subscriptions \(array\<string, mixed\>\) does not accept array\<int\|string, mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 4
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 2
+			path: app/Component/MapUpdate.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Log\\ShellColors\:\:getBackgroundColors\(\) should return array\<string, mixed\> but returns list\<string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Log/ShellColors.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Log\\ShellColors\:\:getForegroundColors\(\) should return array\<string, mixed\> but returns list\<string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Log/ShellColors.php
+
+		-
+			message: '#^Possibly invalid array key type string\|null\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 4
+			path: app/Log/ShellColors.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: app/Log/Store.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Log\\Store\:\:getDateTimeFromMicrotime\(\) should return DateTime but returns DateTime\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Log/Store.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Log/Store.php
+
+		-
+			message: '#^Offset ''file'' might not exist on array\{function\: string, line\?\: int, file\?\: string, class\?\: class\-string, type\?\: ''\-\>''\|''\:\:'', args\?\: list\<mixed\>, object\?\: object\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 2
+			path: app/Log/Store.php
+
+		-
+			message: '#^Offset ''line'' might not exist on array\{function\: string, line\?\: int, file\?\: string, class\?\: class\-string, type\?\: ''\-\>''\|''\:\:'', args\?\: list\<mixed\>, object\?\: object\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Log/Store.php
+
+		-
+			message: '#^Property Exodus4D\\Socket\\Log\\Store\:\:\$store \(array\<string, mixed\>\) does not accept array\<int\|string, mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 2
+			path: app/Log/Store.php
+
+		-
+			message: '#^Call to an undefined method Clue\\React\\NDJson\\Encoder\|React\\Socket\\ConnectionInterface\:\:getRemoteAddress\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Socket/TcpSocket.php
+
+		-
+			message: '#^Call to an undefined method Ratchet\\MessageComponentInterface\:\:getSocketStats\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Socket/TcpSocket.php
+
+		-
+			message: '#^Call to deprecated method attach\(\) of class SplObjectStorage\.$#'
+			identifier: method.deprecated
+			count: 1
+			path: app/Socket/TcpSocket.php
+
+		-
+			message: '#^Call to deprecated method contains\(\) of class SplObjectStorage\.$#'
+			identifier: method.deprecated
+			count: 1
+			path: app/Socket/TcpSocket.php
+
+		-
+			message: '#^Call to deprecated method detach\(\) of class SplObjectStorage\.$#'
+			identifier: method.deprecated
+			count: 1
+			path: app/Socket/TcpSocket.php
+
+		-
+			message: '#^Call to sprintf contains an invalid placeholder\.$#'
+			identifier: argument.sprintf
+			count: 1
+			path: app/Socket/TcpSocket.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Socket\\TcpSocket\:\:dispatch\(\) has parameter \$deferred with generic class React\\Promise\\Deferred but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Socket/TcpSocket.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Socket\\TcpSocket\:\:initRead\(\) return type with generic interface React\\Promise\\PromiseInterface does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Socket/TcpSocket.php
+
+		-
+			message: '#^Method Exodus4D\\Socket\\Socket\\TcpSocket\:\:write\(\) has parameter \$deferred with generic class React\\Promise\\Deferred but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Socket/TcpSocket.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function call_user_func_array expects callable\(\)\: mixed, array\{Ratchet\\MessageComponentInterface, ''receiveData''\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Socket/TcpSocket.php
+
+		-
+			message: '#^Parameter \#2 \$load of method Exodus4D\\Socket\\Socket\\TcpSocket\:\:newPayload\(\) expects null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Socket/TcpSocket.php
+
+		-
+			message: '#^Property Exodus4D\\Socket\\Socket\\TcpSocket\:\:\$connections with generic class SplObjectStorage does not specify its types\: TObject, TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Socket/TcpSocket.php
+
+		-
+			message: '''
+				#^Call to method __construct\(\) of deprecated class React\\Socket\\Server\:
+				1\.9\.0 See `SocketServer` instead$#
+			'''
+			identifier: method.deprecatedClass
+			count: 1
+			path: app/WebSockets.php
+
+		-
+			message: '''
+				#^Call to method create\(\) of deprecated class React\\EventLoop\\Factory\:
+				1\.2\.0 See Loop instead\.$#
+			'''
+			identifier: staticMethod.deprecatedClass
+			count: 1
+			path: app/WebSockets.php
+
+		-
+			message: '''
+				#^Instantiation of deprecated class React\\Socket\\Server\:
+				1\.9\.0 See `SocketServer` instead$#
+			'''
+			identifier: new.deprecatedClass
+			count: 1
+			path: app/WebSockets.php
+
+		-
+			message: '#^Binary operation "\." between ''tcp\://'' and int\|list\<mixed\>\|string results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: cmd.php
+
+		-
+			message: '#^Binary operation "\." between non\-falsy\-string and int\|list\<mixed\>\|string results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: cmd.php
+
+		-
+			message: '#^Parameter \#1 \$debug of closure expects int, int\|list\<mixed\>\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: cmd.php
+
+		-
+			message: '#^Parameter \#2 \$wsListenPort of class Exodus4D\\Socket\\WebSockets constructor expects int, int\|list\<mixed\>\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: cmd.php
+
+		-
+			message: '#^Parameter \#3 \$wsListenHost of class Exodus4D\\Socket\\WebSockets constructor expects string, int\|list\<mixed\>\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: cmd.php
+
+		-
+			message: '#^Parameter \#4 \$debug of class Exodus4D\\Socket\\WebSockets constructor expects int, int\|list\<mixed\>\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: cmd.php
