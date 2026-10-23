@@ -1,0 +1,10 @@
+includes:
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - phpstan-baseline.neon
+
+parameters:
+    level: 8
+    phpVersion: 80500
+    paths:
+        - app
+        - cmd.php
