@@ -15,7 +15,7 @@ use React\EventLoop;
 use React\Socket;
 use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
-use Ratchet\Http\OriginCheck;
+use Exodus4D\Socket\Http\OriginCheck;
 use Ratchet\WebSocket\WsServer;
 
 class WebSockets {
